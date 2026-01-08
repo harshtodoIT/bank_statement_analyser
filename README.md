@@ -1,14 +1,4 @@
-cd backend
-python -m venv venv
-venv\Scripts\activate
-pip install django 
-python manage.py runserver
-python -m django --version
 
-Fronted:
-cd bank-statement-analyser
-npm install
-npm run dev
 
 # vue3-boilerplate
 
