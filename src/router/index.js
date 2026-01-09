@@ -1,17 +1,24 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import UploadView from '../views/UploadView.vue'
-
-const routes = [
-  {
-    path: '/',
-    name: 'upload',
-    component: UploadView
-  }
-]
+import { createRouter, createWebHistory } from "vue-router"
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes: [
+    {
+      path: "/",
+      name: "upload",
+      component: () => import("../views/UploadView.vue"),
+    },
+    {
+      path: "/processing",
+      name: "processing",
+      component: () => import("../views/ProcessingView.vue"),
+    },
+    {
+      path: "/error",
+      name: "error",
+      component: () => import("../views/ErrorView.vue"),
+    },
+  ],
 })
 
 export default router

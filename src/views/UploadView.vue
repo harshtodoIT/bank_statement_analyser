@@ -1,58 +1,103 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-50 to-blue-100 px-4">
-    <div class="w-full max-w-lg rounded-2xl bg-white shadow-xl p-8">
+  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100">
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
 
       <!-- Icon -->
       <div class="flex justify-center mb-4">
-        <div class="h-14 w-14 flex items-center justify-center rounded-full bg-blue-600 text-white">
+        <div class="h-12 w-12 flex items-center justify-center rounded-full bg-blue-600 text-white">
           📄
         </div>
       </div>
 
-      <!-- Heading -->
-      <h1 class="text-2xl font-semibold text-center text-gray-900">
+      <!-- Title -->
+      <h1 class="text-xl font-semibold text-center text-gray-800">
         Bank Statement Analyser
       </h1>
-      <p class="text-center text-gray-500 mt-1">
+      <p class="text-sm text-center text-gray-500 mt-1">
         Upload your bank statement for instant analysis
       </p>
 
-      <!-- Upload Box -->
-      <div
-        class="mt-6 rounded-xl border-2 border-dashed border-blue-300 bg-blue-50/50 p-8 text-center"
-      >
-        <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-blue-100 text-blue-600 text-2xl">
-          ⬆️
-        </div>
-
-        <p class="font-medium text-gray-800">
+      <!-- Upload box -->
+      <div class="mt-6 border-2 border-dashed border-blue-300 rounded-xl p-6 text-center bg-blue-50">
+        <p class="text-sm font-medium text-gray-700">
           Drag & Drop your file here
         </p>
-        <p class="text-sm text-gray-500 mt-1">or</p>
 
-        <button
-          class="mt-4 rounded-lg bg-blue-600 px-6 py-2 text-white font-medium hover:bg-blue-700 transition"
-        >
+        <p class="text-xs text-gray-500 my-2">or</p>
+
+        <label class="cursor-pointer inline-block bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700 transition">
           Browse Files
-        </button>
+          <input
+            type="file"
+            class="hidden"
+            @change="onFileSelect"
+          />
+        </label>
 
-        <p class="mt-3 text-xs text-gray-500">
-          Supported formats: PDF, PNG, JPG, Excel (Max 10MB)
+        <p class="text-xs text-gray-400 mt-3">
+          Supported formats: PDF, CSV, Excel
         </p>
       </div>
 
-      <!-- Analyze Button -->
+      <!-- Selected file -->
+      <p v-if="selectedFile" class="text-xs text-center text-gray-600 mt-3">
+        Selected file: <b>{{ selectedFile.name }}</b>
+      </p>
+
+      <!-- Upload button -->
       <button
-        class="mt-6 w-full rounded-lg bg-gray-300 py-3 font-semibold text-gray-600 cursor-not-allowed"
+        class="w-full mt-6 py-3 rounded-lg text-sm font-semibold transition"
+        :class="selectedFile
+          ? 'bg-blue-600 text-white hover:bg-blue-700'
+          : 'bg-gray-300 text-gray-600 cursor-not-allowed'"
+        :disabled="!selectedFile"
+        @click="uploadFile"
       >
         Analyze Statement
       </button>
 
-      <!-- Privacy -->
-      <p class="mt-4 text-center text-xs text-gray-500">
-        🔒 Your data is processed securely and never stored
+      <!-- Privacy notice (MANDATORY) -->
+      <p class="mt-4 text-xs text-center text-gray-500">
+        🔒 By default, your data is processed in memory and discarded.
       </p>
 
     </div>
   </div>
 </template>
+
+<script setup>
+  import { ref } from "vue"
+  import { useRouter } from "vue-router"
+
+  const selectedFile = ref(null)
+  const router = useRouter()
+
+  function onFileSelect(event) {
+    selectedFile.value = event.target.files[0] || null
+
+    // ❌ No validation
+    // ❌ No file reading
+    // ✔ Just store file reference
+  }
+
+  async function uploadFile() {
+    if (!selectedFile.value) return
+
+    const formData = new FormData()
+    formData.append("file", selectedFile.value)
+
+    try {
+      // move to processing screen immediately
+      router.push("/processing")
+
+      await fetch("http://localhost:8000/api/upload/", {
+        method: "POST",
+        body: formData,
+      })
+
+    } catch (error) {
+      console.error("Upload failed", error)
+      router.push("/error")
+    }
+  }
+  </script>
