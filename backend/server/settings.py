@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'apps.auth_session',
     'apps.error_audit',
     'apps.api',
+    'apps.uploads',
 ]
 
 MIDDLEWARE = [
