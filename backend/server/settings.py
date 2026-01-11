@@ -36,6 +36,10 @@ INSTALLED_APPS = [
     'apps.error_audit',
     'apps.api',
     'apps.uploads',
+
+    'apps.statements',
+    'apps.transactions',
+    'apps.manual_adjustments',
 ]
 
 MIDDLEWARE = [
