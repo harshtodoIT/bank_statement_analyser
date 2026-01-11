@@ -2,6 +2,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .validators import validate_file
 from .storage import save_temp_file
+from apps.bank_identification.detector import detect_bank_from_file
 
 
 @csrf_exempt
@@ -26,10 +27,18 @@ def upload_statement(request):
             {"error": str(e)},
             status=400
         )
+    try:
+        bank_name = detect_bank_from_file(storage_info["file_path"])
+    except ValueError as e:
+        return JsonResponse(
+            {"error": str(e)},
+            status=400
+        )
 
     return JsonResponse({
         "status": "accepted",
         "session_id": session_id,
         "file_hash": storage_info["file_hash"],
-        "file_name": uploaded_file.name
+        "file_name": uploaded_file.name,
+        "bank_name": bank_name
     })
