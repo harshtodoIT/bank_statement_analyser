@@ -1,4 +1,5 @@
 from .patterns import BANK_PATTERNS
+from .extractor import extract_first_part
 
 
 def detect_bank_from_text(text: str) -> str:
@@ -23,3 +24,11 @@ def detect_bank_from_text(text: str) -> str:
         raise ValueError("Ambiguous bank detection.")
 
     raise ValueError("Unsupported or unknown bank statement.")
+
+
+def detect_bank_from_file(file_path: str) -> str:
+    """
+    Detect bank name directly from file path.
+    """
+    text = extract_first_part(file_path)
+    return detect_bank_from_text(text)
