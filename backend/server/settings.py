@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'apps.manual_adjustments',
 
     'apps.bank_identification',
+    'apps.parsing',
 ]
 
 MIDDLEWARE = [
