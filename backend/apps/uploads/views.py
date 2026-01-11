@@ -28,7 +28,8 @@ def upload_statement(request):
         )
 
     return JsonResponse({
-        "message": "File uploaded successfully.",
+        "status": "accepted",
         "session_id": session_id,
-        "file_hash": storage_info["file_hash"]
+        "file_hash": storage_info["file_hash"],
+        "file_name": uploaded_file.name
     })
