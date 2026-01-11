@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'apps.statements',
     'apps.transactions',
     'apps.manual_adjustments',
+
+    'apps.bank_identification',
 ]
 
 MIDDLEWARE = [
