@@ -90,7 +90,7 @@
       // move to processing screen immediately
       router.push("/processing")
 
-      await fetch("http://localhost:8000/api/upload/", {
+      await fetch("http://localhost:8000/api/uploads/statement/", {
         method: "POST",
         body: formData,
       })
@@ -100,4 +100,4 @@
       router.push("/error")
     }
   }
-  </script>
+</script>

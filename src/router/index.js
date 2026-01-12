@@ -1,22 +1,39 @@
 import { createRouter, createWebHistory } from "vue-router"
 
+// Views
+import HomeView from '../views/homeView.vue'
+import UploadView from '../views/UploadView.vue'
+import ProcessingView from '../views/ProcessingView.vue'
+import ErrorView from '../views/ErrorView.vue'
+import DashboardView from '../views/DashboardView.vue'
+
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: "/",
-      name: "upload",
-      component: () => import("../views/UploadView.vue"),
+      path: '/',
+      name: 'Home',
+      component: HomeView,
     },
     {
-      path: "/processing",
-      name: "processing",
-      component: () => import("../views/ProcessingView.vue"),
+      path: '/upload',
+      name: 'Upload',
+      component: UploadView,
     },
     {
-      path: "/error",
-      name: "error",
-      component: () => import("../views/ErrorView.vue"),
+      path: '/processing',
+      name: 'Processing',
+      component: ProcessingView,
+    },
+    {
+      path: '/dashboard',
+      name: 'Dashboard',
+      component: DashboardView,
+    },
+    {
+      path: '/error',
+      name: 'Error',
+      component: ErrorView,
     },
   ],
 })
