@@ -2,6 +2,7 @@ import os
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
+from django.shortcuts import get_object_or_404
 
 from .models import ProcessingJob
 
@@ -62,3 +63,21 @@ def start_processing(request):
         "job_id": str(job.id),
         "status": job.status
     })
+
+def process_status(request, job_id):
+    if request.method != "GET":
+        return JsonResponse(
+            {"error": "Only GET method is allowed."},
+            status=405
+        )
+
+    job = get_object_or_404(ProcessingJob, id=job_id)
+
+    response = {
+        "status": job.status
+    }
+
+    if job.status == ProcessingJob.Status.FAILED:
+        response["error"] = job.error_message
+
+    return JsonResponse(response)
