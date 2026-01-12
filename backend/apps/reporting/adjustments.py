@@ -42,7 +42,7 @@ def _validate_note(note):
     if len(note) > 255:
         return "Note must not exceed 255 characters."
 
-    # Basic sanitization (no HTML / scripts)
+  
     if re.search(r"<.*?>", note):
         return "Note contains invalid characters."
 
