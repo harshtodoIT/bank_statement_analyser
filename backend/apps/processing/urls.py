@@ -5,3 +5,4 @@ urlpatterns = [
     path("start/", start_processing),
     path("status/<uuid:job_id>/", process_status),
 ]
+

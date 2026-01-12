@@ -81,3 +81,4 @@ def process_status(request, job_id):
         response["error"] = job.error_message
 
     return JsonResponse(response)
+
