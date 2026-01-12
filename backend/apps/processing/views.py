@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from django.shortcuts import get_object_or_404
-
+from .worker import start_async_job
 from .models import ProcessingJob
 
 
@@ -58,6 +58,8 @@ def start_processing(request):
         bank_name="UNKNOWN",
         status=ProcessingJob.Status.PENDING,
     )
+
+    start_async_job(job.id)
 
     return JsonResponse({
         "job_id": str(job.id),
