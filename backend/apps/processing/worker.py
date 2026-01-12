@@ -2,6 +2,7 @@ import threading
 from apps.parsing.dispatcher import parse_statement
 from apps.structuring.engine import structure_rows
 from .models import ProcessingJob
+from apps.validation.engine import validate_transactions
 
 
 def start_async_job(job_id):
@@ -39,6 +40,9 @@ def run_processing_job(job_id):
 
         # Step 2: Structure rows (STRICT)
         structured_transactions = structure_rows(raw_rows)
+
+        # Step 3: Validate transactions (STRICT)
+        validate_transactions(structured_transactions)
 
         # Phase 1: we do not persist results yet
         # Success means structuring passed completely

@@ -2,6 +2,9 @@ def calculate_total_credit(transactions):
     total = 0.0
 
     for txn in transactions:
+        if "opening" in txn["description"].lower():
+            continue
+
         if txn.get("credit") is not None:
             total += txn["credit"]
 
@@ -12,6 +15,9 @@ def calculate_total_debit(transactions):
     total = 0.0
 
     for txn in transactions:
+        if "opening" in txn["description"].lower():
+            continue
+
         if txn.get("debit") is not None:
             total += txn["debit"]
 
