@@ -43,6 +43,7 @@ INSTALLED_APPS = [
 
     'apps.bank_identification',
     'apps.parsing',
+    'apps.processing',
 ]
 
 MIDDLEWARE = [
