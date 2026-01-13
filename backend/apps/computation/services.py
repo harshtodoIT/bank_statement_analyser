@@ -10,7 +10,7 @@ def compute_all(transactions):
     monthly = group_by_month(transactions)
     monthly_cashflow = calculate_net_cashflow(monthly)
 
-    # Build monthly summary with net
+   
     monthly_summary = {}
     for month, values in monthly.items():
         monthly_summary[month] = {

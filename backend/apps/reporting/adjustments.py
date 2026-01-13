@@ -10,7 +10,6 @@ def _validate_label(label):
     if len(label) < 3 or len(label) > 100:
         return "Label must be between 3 and 100 characters."
 
-    # Reject labels with only numbers or symbols
     if not re.search(r"[A-Za-z]", label):
         return "Label must contain at least one alphabet character."
 
