@@ -2,43 +2,35 @@ import csv
 from datetime import datetime
 
 
-def generate_csv(report_data, transactions, manual_adjustments):
+def generate_csv(report):
     filename = f"statement_export_{datetime.now().strftime('%Y%m%d%H%M%S')}.csv"
 
-    with open(filename, mode="w", newline="", encoding="utf-8") as file:
+    with open(filename, "w", newline="", encoding="utf-8") as file:
         writer = csv.writer(file)
 
-        # Header
+        writer.writerow(["Type", "Label", "Amount", "Month", "Credit", "Debit", "Net"])
+
+        # Totals
         writer.writerow([
-            "Date", "Description", "Debit", "Credit",
-            "Balance", "Category", "Is Manual"
+            "SUMMARY", "Total Credit", report["totals"]["credit"], "", "", "", ""
+        ])
+        writer.writerow([
+            "SUMMARY", "Total Debit", report["totals"]["debit"], "", "", "", ""
+        ])
+        writer.writerow([
+            "SUMMARY", "Net Cash Flow", report["yearly_summary"]["net_cash_flow"], "", "", "", ""
         ])
 
-        # Bank transactions
-        for txn in transactions:
+        # Monthly summary
+        for month, data in report["monthly_summary"].items():
             writer.writerow([
-                txn.get("date"),
-                txn.get("description"),
-                txn.get("debit"),
-                txn.get("credit"),
-                txn.get("balance"),
-                txn.get("category", "Uncategorized"),
-                "No"
+                "MONTH", month, "", "", data["credit"], data["debit"], data["net"]
             ])
 
         # Manual adjustments
-        for adj in manual_adjustments:
+        for adj in report["manual_adjustments"]:
             writer.writerow([
-                "",
-                adj.get("label"),
-                adj.get("amount") if adj.get("amount", 0) < 0 else "",
-                adj.get("amount") if adj.get("amount", 0) > 0 else "",
-                "",
-                "Manual",
-                "Yes"
+                "MANUAL", adj["label"], adj["amount"], "", "", "", ""
             ])
 
-    return {
-        "success": True,
-        "file": filename
-    }
+    return filename

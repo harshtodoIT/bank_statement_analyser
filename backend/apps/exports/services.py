@@ -1,16 +1,8 @@
-from .csv_export import generate_csv
-from .pdf_export import generate_pdf
+from apps.reporting.services import generate_report
 
 
-def export_statement(report_data, transactions, manual_adjustments, export_type):
+def get_export_data(result):
     """
-    export_type: 'csv' or 'pdf'
+    Single source of truth for all exports
     """
-
-    if export_type == "csv":
-        return generate_csv(report_data, transactions, manual_adjustments)
-
-    if export_type == "pdf":
-        return generate_pdf(report_data, transactions, manual_adjustments)
-
-    raise ValueError("Unsupported export type")
+    return generate_report(result)
