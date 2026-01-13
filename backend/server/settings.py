@@ -39,7 +39,7 @@ INSTALLED_APPS = [
 
     'apps.statements',
     'apps.transactions',
-    'apps.manual_adjustments',
+    'apps.manual_adjustments.apps.ManualAdjustmentsConfig',
 
     'apps.bank_identification',
     'apps.parsing',
