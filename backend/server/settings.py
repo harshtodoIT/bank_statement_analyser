@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'apps.parsing',
     'apps.processing',
     'apps.structuring',
+    'apps.results',
 ]
 
 MIDDLEWARE = [

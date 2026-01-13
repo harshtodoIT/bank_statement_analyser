@@ -3,6 +3,8 @@ from apps.parsing.dispatcher import parse_statement
 from apps.structuring.engine import structure_rows
 from .models import ProcessingJob
 from apps.validation.engine import validate_transactions
+from apps.results.models import ProcessingResult
+from apps.computation.services import compute_all
 
 
 def start_async_job(job_id):
@@ -46,12 +48,27 @@ def run_processing_job(job_id):
 
         # Phase 1: we do not persist results yet
         # Success means structuring passed completely
+        computed = compute_all(structured_transactions)
+
+        ProcessingResult.objects.create(
+            job_id=job.id,
+            status="SUCCESS",
+            totals=computed["totals"],
+            monthly_summary=computed["monthly_summary"],
+            net_cash_flow=computed["net_cash_flow"],
+        )
+
         job.status = ProcessingJob.Status.SUCCESS
         job.save()
 
     except Exception as e:
         try:
-            job = ProcessingJob.objects.get(id=job_id)
+            ProcessingResult.objects.create(
+                job_id=job.id,
+                status="FAILED",
+                error=str(e),
+            )
+
             job.status = ProcessingJob.Status.FAILED
             job.error_message = str(e)
             job.save()
