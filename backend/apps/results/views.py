@@ -40,5 +40,6 @@ def get_summary(request, job_id):
             "net_cash_flow": result.net_cash_flow,
             "manual_adjustments": adjustments,
             "net_cash_flow_with_manual": round(net_with_manual, 2),
+            "category_summary": result.categorized_summary or {}
         }
     })

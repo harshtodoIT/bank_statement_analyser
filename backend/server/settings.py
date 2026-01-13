@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'apps.processing',
     'apps.structuring',
     'apps.results',
+    'apps.categorization',
 ]
 
 MIDDLEWARE = [

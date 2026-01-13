@@ -5,6 +5,7 @@ from .models import ProcessingJob
 from apps.validation.engine import validate_transactions
 from apps.results.models import ProcessingResult
 from apps.computation.services import compute_all
+from apps.categorization.engine import categorize_transactions
 
 
 def start_async_job(job_id):
@@ -49,6 +50,7 @@ def run_processing_job(job_id):
         # Phase 1: we do not persist results yet
         # Success means structuring passed completely
         computed = compute_all(structured_transactions)
+        category_summary = categorize_transactions(structured_transactions)
 
         ProcessingResult.objects.create(
             job_id=job.id,
@@ -56,6 +58,7 @@ def run_processing_job(job_id):
             totals=computed["totals"],
             monthly_summary=computed["monthly_summary"],
             net_cash_flow=computed["net_cash_flow"],
+            categorized_summary=category_summary,
         )
 
         job.status = ProcessingJob.Status.SUCCESS
@@ -67,6 +70,7 @@ def run_processing_job(job_id):
                 job_id=job.id,
                 status="FAILED",
                 error=str(e),
+                categorized_summary = {}
             )
 
             job.status = ProcessingJob.Status.FAILED
