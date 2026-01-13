@@ -14,7 +14,6 @@ def build_monthly_summary(transactions):
         if txn["debit"]:
             monthly[month_key]["debit"] += float(txn["debit"])
 
-    # calculate net
     for month in monthly:
         monthly[month]["net"] = (
             monthly[month]["credit"] - monthly[month]["debit"]
