@@ -1,5 +1,4 @@
 from django.apps import AppConfig
-
-
 class ManualAdjustmentsConfig(AppConfig):
-    name = 'apps.manual_adjustments'
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "apps.manual_adjustments"

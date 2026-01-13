@@ -24,4 +24,5 @@ urlpatterns = [
     path('api/uploads/', include('apps.uploads.urls')),
     path('api/process/', include('apps.processing.urls')),
     path("api/", include("apps.results.urls")),
+    path("api/", include("apps.manual_adjustments.urls")),
 ]
