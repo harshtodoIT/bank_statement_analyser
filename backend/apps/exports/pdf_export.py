@@ -90,6 +90,33 @@ def generate_pdf(report):
     elements.append(monthly_table)
     elements.append(Spacer(1, 24))
 
+        # Category Summary
+    if report.get("category_summary"):
+        elements.append(Paragraph("Category Summary", section_style))
+        elements.append(Spacer(1, 10))
+
+        category_table_data = [["Category", "Amount"]]
+
+        for category, amount in report["category_summary"].items():
+            category_table_data.append([
+                category,
+                f"₹ {amount:,.2f}"
+            ])
+
+        category_table = Table(category_table_data, colWidths=[200, 200])
+        category_table.setStyle(TableStyle([
+            ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#F2F2F2")),
+            ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+            ("ALIGN", (1, 1), (-1, -1), "RIGHT"),
+            ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
+            ("BOTTOMPADDING", (0, 0), (-1, 0), 10),
+            ("TOPPADDING", (0, 0), (-1, 0), 10),
+        ]))
+
+        elements.append(category_table)
+        elements.append(Spacer(1, 24))
+
+
     # Manual Adjustments
     if report["manual_adjustments"]:
         elements.append(Paragraph("Manual Adjustments", section_style))

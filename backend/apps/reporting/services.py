@@ -36,4 +36,5 @@ def generate_report(result):
         "manual_adjustments": manual_adjustments,
         "manual_adjustments_total": round(manual_total, 2),
         "final_net_cash_flow": final_net_cash_flow,
+        "category_summary": result.categorized_summary or {},
     }

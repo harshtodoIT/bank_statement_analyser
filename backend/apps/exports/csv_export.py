@@ -27,6 +27,14 @@ def generate_csv(report):
                 "MONTH", month, "", "", data["credit"], data["debit"], data["net"]
             ])
 
+        # Category summary
+        if report.get("category_summary"):
+            for category, amount in report["category_summary"].items():
+                writer.writerow([
+                    "CATEGORY", category, amount, "", "", "", ""
+                ])
+
+
         # Manual adjustments
         for adj in report["manual_adjustments"]:
             writer.writerow([
