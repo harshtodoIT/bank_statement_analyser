@@ -5,6 +5,7 @@ from .models import ProcessingResult
 from apps.manual_adjustments.models import ManualAdjustment
 
 
+
 def get_summary(request, job_id):
     result = get_object_or_404(ProcessingResult, job_id=job_id)
 
