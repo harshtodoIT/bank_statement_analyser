@@ -68,9 +68,12 @@
 <script setup>
   import { ref } from "vue"
   import { useRouter } from "vue-router"
+  import { useUploadStore } from "../stores/upload.store"
 
   const selectedFile = ref(null)
   const router = useRouter()
+  const uploadStore = useUploadStore()
+
 
   function onFileSelect(event) {
     selectedFile.value = event.target.files[0] || null
@@ -83,21 +86,13 @@
   async function uploadFile() {
     if (!selectedFile.value) return
 
-    const formData = new FormData()
-    formData.append("file", selectedFile.value)
+    const success = await uploadStore.uploadFile(
+      selectedFile.value
+    )
 
-    try {
-      // move to processing screen immediately
+    if (success) {
       router.push("/processing")
-
-      await fetch("http://localhost:8000/api/uploads/statement/", {
-        method: "POST",
-        body: formData,
-      })
-
-    } catch (error) {
-      console.error("Upload failed", error)
-      router.push("/error")
     }
   }
+
 </script>
