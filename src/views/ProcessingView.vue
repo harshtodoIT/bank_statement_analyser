@@ -127,20 +127,60 @@
 </template>
 
 <script setup>
-/**
- * NOTE:
- * This UI is intentionally frontend-only.
- * Backend will later send processing status
- * based on statements & transactions tables.
- */
+  import { ref } from "vue";
 
-const progress = 100
+  const progress = ref(10);
 
-const steps = [
-  { key: 'upload', label: 'Uploading file', status: 'done' },
-  { key: 'read', label: 'Reading PDF', status: 'done' },
-  { key: 'extract', label: 'Extracting transactions', status: 'done' },
-  { key: 'categorize', label: 'Categorizing data', status: 'done' },
-  { key: 'finalize', label: 'Finalizing analysis', status: 'loading' }
-]
+  const steps = ref([
+    { key: "upload", label: "Uploading file", status: "done" },
+    { key: "read", label: "Reading PDF", status: "done" },
+    { key: "extract", label: "Extracting transactions", status: "loading" },
+    { key: "categorize", label: "Categorizing data", status: "pending" },
+    { key: "finalize", label: "Finalizing analysis", status: "pending" },
+  ]);
+  import { onMounted, onUnmounted } from "vue";
+  import { useRouter } from "vue-router";
+  import { useProcessingStore } from "../stores/processing.store";
+
+  const processingStore = useProcessingStore();
+  const router = useRouter();
+
+  let timer = null;
+
+  onMounted(async () => {
+    try {
+      await processingStore.startJob();
+    } catch {
+      router.push("/upload");
+      return;
+    }
+
+    timer = setInterval(async () => {
+      await processingStore.pollStatus();
+
+      if (processingStore.status === "SUCCESS") {
+        clearInterval(timer);
+        router.push("/dashboard");
+      }
+
+      if (processingStore.status === "FAILED") {
+        clearInterval(timer);
+        console.error(processingStore.error);
+      }
+
+      if (processingStore.status === "PROCESSING") {
+        progress.value = 60;
+      }
+
+      if (processingStore.status === "SUCCESS") {
+        progress.value = 100;
+      }
+
+    }, 2000);
+  });
+
+  onUnmounted(() => {
+    if (timer) clearInterval(timer);
+  });
+
 </script>

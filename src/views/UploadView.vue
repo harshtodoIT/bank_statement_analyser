@@ -66,33 +66,28 @@
 </template>
 
 <script setup>
-  import { ref } from "vue"
-  import { useRouter } from "vue-router"
-  import { useUploadStore } from "../stores/upload.store"
+  import { ref } from "vue";
+  import { useRouter } from "vue-router";
+  import { useUploadStore } from "../stores/upload.store";
 
-  const selectedFile = ref(null)
-  const router = useRouter()
-  const uploadStore = useUploadStore()
+  const selectedFile = ref(null);
+  const uploadStore = useUploadStore();
+  const router = useRouter();
 
-
-  function onFileSelect(event) {
-    selectedFile.value = event.target.files[0] || null
-
-    // ❌ No validation
-    // ❌ No file reading
-    // ✔ Just store file reference
+  function onFileSelect(e) {
+    selectedFile.value = e.target.files[0] || null;
   }
 
   async function uploadFile() {
-    if (!selectedFile.value) return
+    if (!selectedFile.value) return;
 
     const success = await uploadStore.uploadFile(
       selectedFile.value
-    )
+    );
 
     if (success) {
-      router.push("/processing")
+      router.push("/processing");
     }
   }
+  </script>
 
-</script>

@@ -13,6 +13,7 @@ def upload_statement(request):
             status=405
         )
 
+    # ✅ Ensure session exists
     if not request.session.session_key:
         request.session.create()
 
@@ -27,6 +28,7 @@ def upload_statement(request):
             {"error": str(e)},
             status=400
         )
+
     try:
         bank_name = detect_bank_from_file(storage_info["file_path"])
     except ValueError as e:
