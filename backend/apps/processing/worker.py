@@ -21,10 +21,8 @@ def run_processing_job(job_id):
         job.status = ProcessingJob.Status.PROCESSING
         job.save()
 
-        # Get file path from session temp storage
-        # Phase 1 assumption: one file per session
+        # Locate uploaded file (one file per session)
         from django.conf import settings
-        from pathlib import Path
 
         session_id = job.session_id
         tmp_root = settings.MEDIA_ROOT / "tmp" / session_id
@@ -41,17 +39,20 @@ def run_processing_job(job_id):
         # Step 1: Parse raw rows
         raw_rows = parse_statement(str(file_path))
 
-        # Step 2: Structure rows (STRICT)
+        # Step 2: Structure rows
         structured_transactions = structure_rows(raw_rows)
 
-        # Step 3: Validate transactions (STRICT)
+        # Step 3: Validate transactions
         validate_transactions(structured_transactions)
 
-        # Phase 1: we do not persist results yet
-        # Success means structuring passed completely
+        # Step 4: Compute summaries
         computed = compute_all(structured_transactions)
         category_summary = categorize_transactions(structured_transactions)
 
+        # ✅ Total transactions count
+        total_transactions = len(structured_transactions)
+
+        # Persist final result
         ProcessingResult.objects.create(
             job_id=job.id,
             status="SUCCESS",
@@ -59,6 +60,8 @@ def run_processing_job(job_id):
             monthly_summary=computed["monthly_summary"],
             net_cash_flow=computed["net_cash_flow"],
             categorized_summary=category_summary,
+            total_transactions=total_transactions,
+            bank_name=job.bank_name,
         )
 
         job.status = ProcessingJob.Status.SUCCESS
@@ -70,7 +73,9 @@ def run_processing_job(job_id):
                 job_id=job.id,
                 status="FAILED",
                 error=str(e),
-                categorized_summary = {}
+                categorized_summary={},
+                total_transactions=0,
+                bank_name=job.bank_name,
             )
 
             job.status = ProcessingJob.Status.FAILED

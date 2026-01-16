@@ -1,27 +1,48 @@
 <script setup>
-  import CategorySection from './CategorySection.vue'
+  import { computed } from "vue";
+  import { useDashboardStore } from "../../stores/dashboard.store";
+  import CategorySection from "./CategorySection.vue";
+
+  const store = useDashboardStore();
+
+  const incomeTotal = computed(() =>
+    store.incomeCategories.reduce((s, c) => s + c.amount, 0)
+  );
+
+  const expenseTotal = computed(() =>
+    store.expenseCategories.reduce((s, c) => s + c.amount, 0)
+  );
+
+  const uncategorizedTotal = computed(() =>
+    store.uncategorizedAmount || 0
+  );
   </script>
 
   <template>
     <div class="space-y-8">
-
       <CategorySection
         title="Income Categories"
-        total="6650"
+        :total="incomeTotal"
+        :categories="store.incomeCategories"
         type="income"
       />
 
       <CategorySection
         title="Expense Categories"
-        total="4150"
+        :total="expenseTotal"
+        :categories="store.expenseCategories"
         type="expense"
       />
 
       <CategorySection
         title="Uncategorized Transactions"
-        total="485"
+        :total="uncategorizedTotal"
+        :categories="
+          store.uncategorizedAmount
+            ? [{ name: 'Uncategorized', amount: store.uncategorizedAmount }]
+            : []
+        "
         type="uncategorized"
       />
-
     </div>
   </template>

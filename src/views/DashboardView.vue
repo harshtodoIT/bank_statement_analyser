@@ -5,6 +5,15 @@
   import IncomeExpenseChart from '../components/dashboard/IncomeExpenseChart.vue';
   import ExportReport from '../components/dashboard/ExportReport.vue';
 
+  import { onMounted } from "vue";
+  import { useDashboardStore } from "../stores/dashboard.store";
+
+  const dashboardStore = useDashboardStore();
+
+  onMounted(() => {
+    dashboardStore.fetchDashboardData();
+  });
+
 </script>
 
   <template>

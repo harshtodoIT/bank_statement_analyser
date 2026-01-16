@@ -1,11 +1,15 @@
 <script setup>
-  import CategoryRow from './CategoryRow.vue'
+  import CategoryRow from "./CategoryRow.vue";
 
   defineProps({
     title: String,
-    total: String,
-    type: String
-  })
+    total: Number,
+    type: String,
+    categories: {
+      type: Array,
+      default: () => []
+    }
+  });
   </script>
 
   <template>
@@ -20,10 +24,17 @@
         }"
       >
         <p class="font-medium">{{ title }}</p>
-        <p class="font-semibold">₹{{ total }}</p>
+        <p class="font-semibold">₹{{ total.toLocaleString() }}</p>
       </div>
 
       <!-- Rows -->
-      <CategoryRow v-for="i in 3" :key="i" :type="type" />
+      <CategoryRow
+        v-for="c in categories"
+        :key="c.name"
+        :name="c.name"
+        :amount="c.amount"
+        :total="total"
+        :type="type"
+      />
     </div>
   </template>

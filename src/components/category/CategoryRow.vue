@@ -1,12 +1,20 @@
 <script setup>
-  defineProps({
+  import { computed } from "vue";
+
+  const props = defineProps({
+    name: String,
+    amount: Number,
+    total: Number,
     type: String
-  })
+  });
+
+  const percentage = computed(() =>
+    props.total ? Math.round((props.amount / props.total) * 100) : 0
+  );
   </script>
 
   <template>
     <div class="border rounded-lg p-4 space-y-3">
-
       <!-- Header -->
       <div class="flex justify-between items-center">
         <div class="flex items-center gap-3">
@@ -22,13 +30,13 @@
           </div>
 
           <p class="font-medium text-gray-800">
-            Category Name
+            {{ name }}
           </p>
         </div>
 
         <div class="text-right">
-          <p class="font-medium">₹1,200.00</p>
-          <p class="text-xs text-gray-500">18.0%</p>
+          <p class="font-medium">₹{{ amount.toLocaleString() }}</p>
+          <p class="text-xs text-gray-500">{{ percentage }}%</p>
         </div>
       </div>
 
@@ -36,13 +44,13 @@
       <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
         <div
           class="h-full rounded-full transition-all duration-500"
+          :style="{ width: percentage + '%' }"
           :class="{
-            'bg-green-500 w-[70%]': type === 'income',
-            'bg-red-500 w-[45%]': type === 'expense',
-            'bg-orange-500 w-[25%]': type === 'uncategorized'
+            'bg-green-500': type === 'income',
+            'bg-red-500': type === 'expense',
+            'bg-orange-500': type === 'uncategorized'
           }"
         ></div>
       </div>
-
     </div>
   </template>
