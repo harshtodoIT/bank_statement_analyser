@@ -1,15 +1,45 @@
 <script setup>
-  import { ref } from 'vue'
+  import { ref } from "vue";
+  import { useProcessingStore } from "../../stores/processing.store";
+  import { downloadCSV, downloadPDF } from "../../api/reports.api";
 
-  const showDropdown = ref(false)
+  const showDropdown = ref(false);
+  const processingStore = useProcessingStore();
 
   function toggleDropdown() {
-    showDropdown.value = !showDropdown.value
+    showDropdown.value = !showDropdown.value;
   }
 
-  function handleDownload(type) {
-    console.log('Download requested:', type)
-    showDropdown.value = false
+  async function handleDownload(type) {
+    showDropdown.value = false;
+
+    const jobId = processingStore.jobId;
+    if (!jobId) return;
+
+    try {
+      const response =
+        type === "pdf"
+          ? await downloadPDF(jobId)
+          : await downloadCSV(jobId);
+
+      const blob = new Blob([response.data]);
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download =
+        type === "pdf"
+          ? `statement_report_${jobId}.pdf`
+          : `statement_report_${jobId}.csv`;
+
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Export failed", err);
+    }
   }
   </script>
 
@@ -34,7 +64,6 @@
                text-white font-semibold
                py-3 rounded-xl transition"
       >
-        <!-- Download icon -->
         <svg
           class="w-5 h-5"
           fill="none"
@@ -51,7 +80,6 @@
 
         Download Report
 
-        <!-- Chevron -->
         <svg
           class="w-4 h-4"
           fill="none"
@@ -67,7 +95,7 @@
         </svg>
       </button>
 
-      <!-- Dropdown (FLOATING, does not affect layout) -->
+      <!-- Dropdown -->
       <div
         v-if="showDropdown"
         class="absolute left-6 right-6 top-[170px]
@@ -101,7 +129,6 @@
           </div>
         </button>
 
-        <!-- Divider -->
         <div class="border-t border-gray-100"></div>
 
         <!-- CSV -->
