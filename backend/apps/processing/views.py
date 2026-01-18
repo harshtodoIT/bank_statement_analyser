@@ -5,9 +5,14 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404
 from .worker import start_async_job
 from .models import ProcessingJob
+from rest_framework.decorators import api_view, authentication_classes
+from rest_framework.response import Response
+from rest_framework import status
 
+from apps.users.authentication import MockClerkAuthentication
 
-@csrf_exempt
+@api_view(["POST"])
+@authentication_classes([MockClerkAuthentication])
 def start_processing(request):
     if request.method != "POST":
         return JsonResponse(
@@ -50,6 +55,7 @@ def start_processing(request):
         file_hash=file_hash,
         bank_name="UNKNOWN",
         status=ProcessingJob.Status.PENDING,
+        user=request.user,
     )
 
     start_async_job(job.id)
