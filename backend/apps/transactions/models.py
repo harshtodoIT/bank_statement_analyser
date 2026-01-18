@@ -1,6 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 from apps.statements.models import Statement
+from django.conf import settings
 
 
 class Transaction(models.Model):
@@ -43,6 +44,14 @@ class Transaction(models.Model):
         decimal_places=2,
         null=True,
         blank=True,
+    )
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="transactions",
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
