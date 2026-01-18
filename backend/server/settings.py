@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'apps.categorization',
 
     "rest_framework",
+    'apps.users.apps.UsersConfig',
 ]
 
 MIDDLEWARE = [
