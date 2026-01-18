@@ -15,14 +15,8 @@ def start_processing(request):
             status=405
         )
 
-    if not request.session.session_key:
-        return JsonResponse(
-            {"error": "Session not found."},
-            status=401
-        )
-
-    data = request.POST or {}
-    file_hash = data.get("file_hash")
+    file_hash = request.POST.get("file_hash")
+    session_id = request.POST.get("session_id")
 
     if not file_hash:
         return JsonResponse(
@@ -30,30 +24,29 @@ def start_processing(request):
             status=400
         )
 
-    # Verify file exists in temp storage
-    tmp_root = settings.MEDIA_ROOT / "tmp" / request.session.session_key
+    if not session_id:
+        return JsonResponse(
+            {"error": "session_id is required."},
+            status=400
+        )
+
+    tmp_root = settings.MEDIA_ROOT / "tmp" / session_id
 
     if not tmp_root.exists():
         return JsonResponse(
-            {"error": "No uploaded files found for this session."},
+            {"error": "Upload session not found."},
             status=404
         )
 
-    # Find file by hash (simple scan for Phase 1)
-    file_path = None
-    for f in tmp_root.iterdir():
-        if f.is_file():
-            file_path = f
-            break
-
-    if not file_path:
+    files = [f for f in tmp_root.iterdir() if f.is_file()]
+    if not files:
         return JsonResponse(
             {"error": "Uploaded file not found."},
             status=404
         )
 
     job = ProcessingJob.objects.create(
-        session_id=request.session.session_key,
+        session_id=session_id,
         file_hash=file_hash,
         bank_name="UNKNOWN",
         status=ProcessingJob.Status.PENDING,

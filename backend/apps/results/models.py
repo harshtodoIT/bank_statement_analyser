@@ -13,6 +13,9 @@ class ProcessingResult(models.Model):
     monthly_summary = models.JSONField(null=True, blank=True)
     net_cash_flow = models.FloatField(null=True, blank=True)
 
+    total_transactions = models.IntegerField(default=0)
+    bank_name = models.CharField(max_length=50, null=True, blank=True)
+
     error = models.TextField(null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
