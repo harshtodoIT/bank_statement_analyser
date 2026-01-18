@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     'apps.structuring',
     'apps.results',
     'apps.categorization',
+
+    "rest_framework",
 ]
 
 MIDDLEWARE = [
@@ -132,3 +134,11 @@ CORS_ALLOWED_ORIGINS = [
 SESSION_COOKIE_SAMESITE = "Lax"
 SESSION_COOKIE_SECURE = False
 SESSION_COOKIE_HTTPONLY = True
+
+REST_FRAMEWORK = {
+    "DEFAULT_RENDERER_CLASSES": [
+        "rest_framework.renderers.JSONRenderer",
+    ],
+    "DEFAULT_AUTHENTICATION_CLASSES": [],
+    "DEFAULT_PERMISSION_CLASSES": [],
+}
