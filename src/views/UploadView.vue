@@ -35,7 +35,7 @@
         </label>
 
         <p class="text-xs text-gray-400 mt-3">
-          Supported formats: PDF, CSV, Excel
+          Supported formats: PDF, Image
         </p>
       </div>
 
@@ -56,7 +56,7 @@
         Analyze Statement
       </button>
 
-      <!-- Privacy notice (MANDATORY) -->
+      <!-- Privacy notice -->
       <p class="mt-4 text-xs text-center text-gray-500">
         🔒 By default, your data is processed in memory and discarded.
       </p>
@@ -66,38 +66,30 @@
 </template>
 
 <script setup>
-  import { ref } from "vue"
-  import { useRouter } from "vue-router"
+import { ref } from "vue"
+import { useRouter } from "vue-router"
 
-  const selectedFile = ref(null)
-  const router = useRouter()
+const selectedFile = ref(null)
+const router = useRouter()
 
-  function onFileSelect(event) {
-    selectedFile.value = event.target.files[0] || null
+function onFileSelect(event) {
+  selectedFile.value = event.target.files[0] || null
+}
 
-    // ❌ No validation
-    // ❌ No file reading
-    // ✔ Just store file reference
+function uploadFile() {
+  if (!selectedFile.value) return
+
+  // ✅ FRONTEND-ONLY VALIDATION
+  const isValid =
+    selectedFile.value.type === "application/pdf" ||
+    selectedFile.value.type.startsWith("image/")
+
+  if (!isValid) {
+    // ❌ Invalid file → Error screen ONLY
+    router.push("/error")
+  } else {
+    // ✅ Valid file → Processing screen
+    router.push("/processing")
   }
-
-  async function uploadFile() {
-    if (!selectedFile.value) return
-
-    const formData = new FormData()
-    formData.append("file", selectedFile.value)
-
-    try {
-      // move to processing screen immediately
-      router.push("/processing")
-
-      await fetch("http://localhost:8000/api/uploads/statement/", {
-        method: "POST",
-        body: formData,
-      })
-
-    } catch (error) {
-      console.error("Upload failed", error)
-      router.push("/error")
-    }
-  }
+}
 </script>

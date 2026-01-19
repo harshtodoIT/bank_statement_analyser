@@ -1,58 +1,86 @@
 <script setup>
-  import { onMounted, ref } from 'vue'
+  import { onMounted, ref, onBeforeUnmount } from 'vue'
   import {
     Chart,
-    DoughnutController,
+    PieController,
     ArcElement,
-    Tooltip,
-    Legend
+    Tooltip
   } from 'chart.js'
 
-  Chart.register(DoughnutController, ArcElement, Tooltip, Legend)
+  Chart.register(PieController, ArcElement, Tooltip)
 
-  const canvasRef = ref(null)
+  const chartRef = ref(null)
+  let chartInstance = null
+
+  const values = {
+    income: 6650,
+    expenses: 4150,
+    uncategorized: 300
+  }
 
   onMounted(() => {
-    new Chart(canvasRef.value, {
-      type: 'doughnut',
+    const ctx = chartRef.value.getContext('2d')
+
+    // 🎨 Create gradients (subtle, fintech style)
+    const incomeGradient = ctx.createLinearGradient(0, 0, 200, 200)
+    incomeGradient.addColorStop(0, '#6366F1') // Indigo
+    incomeGradient.addColorStop(1, '#4F46E5')
+
+    const expenseGradient = ctx.createLinearGradient(0, 0, 200, 200)
+    expenseGradient.addColorStop(0, '#38BDF8') // Sky
+    expenseGradient.addColorStop(1, '#0EA5E9')
+
+    const uncategorizedGradient = ctx.createLinearGradient(0, 0, 200, 200)
+    uncategorizedGradient.addColorStop(0, '#CBD5E1') // Slate light
+    uncategorizedGradient.addColorStop(1, '#94A3B8')
+
+    chartInstance = new Chart(ctx, {
+      type: 'pie',
       data: {
         labels: ['Income', 'Expenses', 'Uncategorized'],
         datasets: [
           {
-            data: [6650, 4150, 485],
-            backgroundColor: ['#22c55e', '#ef4444', '#f97316'],
-            hoverOffset: 10,
-            borderWidth: 0
+            data: [
+              values.income,
+              values.expenses,
+              values.uncategorized
+            ],
+            backgroundColor: [
+              incomeGradient,
+              expenseGradient,
+              uncategorizedGradient
+            ],
+            borderWidth: 2,
+            borderColor: '#ffffff'
           }
         ]
       },
       options: {
-        cutout: '70%',
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
-          legend: {
-            position: 'bottom',
-            labels: {
-              usePointStyle: true,
-              padding: 20
-            }
-          },
+          legend: { display: false },
           tooltip: {
-            callbacks: {
-              label: (ctx) => {
-                const value = ctx.raw
-                return `${ctx.label}: ₹${value.toLocaleString()}`
-              }
-            }
+            enabled: true,
+            backgroundColor: '#111827',
+            titleColor: '#ffffff',
+            bodyColor: '#e5e7eb',
+            padding: 10,
+            cornerRadius: 8
           }
         }
       }
     })
   })
+
+  onBeforeUnmount(() => {
+    if (chartInstance) chartInstance.destroy()
+  })
   </script>
 
   <template>
-    <div class="flex justify-center items-center py-10">
-      <canvas ref="canvasRef" class="max-w-[320px]" />
+    <!-- Slightly reduced size for balance -->
+    <div class="w-[220px] h-[220px] mx-auto">
+      <canvas ref="chartRef"></canvas>
     </div>
   </template>

@@ -21,33 +21,39 @@
   </script>
 
   <template>
-    <div class="h-full flex flex-col bg-white border-r">
+    <div
+          class="h-full flex flex-col
+         bg-gradient-to-b from-[#0b1220] to-[#111827]
+         text-gray-300 border-r border-white/10
+         transition-all duration-300 ease-in-out"
+          :class="isOpen ? 'w-[260px]' : 'w-[80px]'"
+    >
+
 
       <!-- HEADER -->
-      <div class="h-16 px-4 flex items-center justify-between border-b">
+      <div class="h-16 px-4 flex items-center justify-between border-b border-white/10">
 
         <!-- Expanded -->
-        <div v-if="isOpen" class="flex items-center gap-3">
-          
-          <span class="font-semibold text-gray-800">
-            Bank Statement Analyser
+        <div v-if="isOpen" class="flex flex-col">
+          <span class="text-white font-semibold text-sm">
+            Statement Analyzer
+          </span>
+          <span class="text-xs text-gray-400">
+            Financial Dashboard
           </span>
         </div>
-
-        <!-- Collapsed -->
-
 
         <!-- Toggle -->
         <button
           @click="emit('toggle')"
-          class="p-2 rounded-lg hover:bg-gray-100"
+          class="p-2 rounded-lg hover:bg-white/10 text-gray-300"
         >
           <component :is="isOpen ? ChevronLeft : Menu" size="20" />
         </button>
       </div>
 
       <!-- NAVIGATION -->
-      <nav class="flex-1 px-3 py-4 space-y-1">
+      <nav class="flex-1 px-3 py-4 space-y-2">
 
         <!-- Dashboard -->
         <SidebarItem label="Dashboard" :isOpen="isOpen">
@@ -112,28 +118,31 @@
       </nav>
 
       <!-- USER SECTION -->
-      <div class="p-4 border-t">
+      <div class="p-4 border-t border-white/10">
 
         <!-- Expanded -->
         <div v-if="isOpen" class="space-y-3">
           <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center">
+            <div class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center">
               👤
             </div>
             <div>
-              <p class="text-sm font-medium">Guest User</p>
-              <p class="text-xs text-gray-500">Temporary session</p>
+              <p class="text-sm font-medium text-white">Guest User</p>
+              <p class="text-xs text-gray-400">Temporary session</p>
             </div>
           </div>
 
-          <button class="w-full bg-blue-600 text-white text-sm py-2 rounded-lg">
+          <button
+            class="w-full bg-indigo-600 hover:bg-indigo-700
+                   text-white text-sm py-2 rounded-lg transition"
+          >
             Login to save data permanently
           </button>
         </div>
 
         <!-- Collapsed -->
         <div v-else class="flex justify-center">
-          <div class="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center">
+          <div class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center">
             👤
           </div>
         </div>
@@ -150,38 +159,28 @@
     padding: 0 0.75rem;
     height: 2.75rem;
     border-radius: 0.75rem;
-    color: #374151;
-    transition: background-color 0.15s ease-in-out;
+    color: #d1d5db;
+    transition: all 0.2s ease;
     position: relative;
   }
 
   .nav-item:hover {
-    background-color: #f3f4f6;
+    background-color: rgba(255, 255, 255, 0.06);
   }
 
   .nav-item svg {
-    color: #6b7280;
+    color: #9ca3af;
   }
 
+  /* ACTIVE ITEM (PURPLE PILL) */
   .nav-item.active {
-    background-color: #eff6ff;
-    color: #2563eb;
+    background: linear-gradient(90deg, #6366f1, #7c3aed);
+    color: #ffffff;
     font-weight: 500;
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35);
   }
 
   .nav-item.active svg {
-    color: #2563eb;
-  }
-
-  .nav-item.active::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 0.25rem;
-    height: 1.5rem;
-    background-color: #2563eb;
-    border-radius: 0 0.25rem 0.25rem 0;
+    color: #ffffff;
   }
   </style>

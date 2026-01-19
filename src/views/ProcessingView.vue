@@ -41,10 +41,8 @@
               ? 'bg-green-500 text-white'
               : 'bg-blue-500 text-white'"
           >
-            <!-- Done -->
             <span v-if="step.status === 'done'">✔</span>
 
-            <!-- Loading -->
             <svg
               v-else
               class="w-5 h-5 animate-spin text-white"
@@ -67,10 +65,8 @@
                 fill="none"
               />
             </svg>
-
           </div>
 
-          <!-- Text -->
           <p class="font-medium text-gray-800">
             {{ step.label }}
           </p>
@@ -115,8 +111,10 @@
           Analyzing...
         </button>
 
+        <!-- ✅ ONLY CHANGE IS HERE -->
         <button
           class="text-gray-500 hover:text-gray-700 text-sm underline"
+          @click="router.push('/upload')"
         >
           Cancel & Re-upload
         </button>
@@ -127,12 +125,24 @@
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
 /**
  * NOTE:
  * This UI is intentionally frontend-only.
  * Backend will later send processing status
  * based on statements & transactions tables.
  */
+ import { onMounted } from 'vue'
+
+onMounted(() => {
+  // simulate backend completion
+  setTimeout(() => {
+    router.push('/dashboard')
+  }, 2500) // 2.5 seconds delay
+})
 
 const progress = 100
 
