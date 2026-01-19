@@ -3,14 +3,16 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404
 from .worker import start_async_job
 from .models import ProcessingJob
-from rest_framework.decorators import api_view, authentication_classes
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 
 from apps.users.authentication import MockClerkAuthentication
 
 @api_view(["POST"])
+@permission_classes([IsAuthenticated])
 @authentication_classes([MockClerkAuthentication])
 def start_processing(request):
     file_hash = request.data.get("file_hash")
@@ -69,6 +71,7 @@ def start_processing(request):
     )
 
 @api_view(["GET"])
+@permission_classes([IsAuthenticated])
 @authentication_classes([MockClerkAuthentication])
 def process_status(request, job_id):
     job = get_object_or_404(ProcessingJob, id=job_id)
