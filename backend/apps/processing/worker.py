@@ -55,6 +55,7 @@ def run_processing_job(job_id):
         # Persist final result
         ProcessingResult.objects.create(
             job_id=job.id,
+            user=job.user,
             status="SUCCESS",
             totals=computed["totals"],
             monthly_summary=computed["monthly_summary"],

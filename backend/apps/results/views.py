@@ -8,12 +8,9 @@ from django.shortcuts import get_object_or_404
 
 from .models import ProcessingResult
 from apps.manual_adjustments.models import ManualAdjustment
-from apps.users.authentication import MockClerkAuthentication
-
+from apps.users.authentication import ClerkAuthentication
 
 @api_view(["GET"])
-@permission_classes([IsAuthenticated])
-@authentication_classes([MockClerkAuthentication])
 def get_summary(request, job_id):
     result = get_object_or_404(
         ProcessingResult,

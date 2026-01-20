@@ -1,20 +1,14 @@
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from .validators import validate_file
 from .storage import save_temp_file
 from apps.bank_identification.detector import detect_bank_from_file
-from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
 
-
-from apps.users.authentication import MockClerkAuthentication
 
 
 @api_view(["POST"])
-@permission_classes([IsAuthenticated])
-@authentication_classes([MockClerkAuthentication])
 def upload_statement(request):
     if request.method != "POST":
         return JsonResponse(

@@ -9,11 +9,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 
-from apps.users.authentication import MockClerkAuthentication
+from apps.users.authentication import ClerkAuthentication
 
 @api_view(["POST"])
-@permission_classes([IsAuthenticated])
-@authentication_classes([MockClerkAuthentication])
 def start_processing(request):
     file_hash = request.data.get("file_hash")
     session_id = request.data.get("session_id")
@@ -71,8 +69,6 @@ def start_processing(request):
     )
 
 @api_view(["GET"])
-@permission_classes([IsAuthenticated])
-@authentication_classes([MockClerkAuthentication])
 def process_status(request, job_id):
     job = get_object_or_404(ProcessingJob, id=job_id)
 
