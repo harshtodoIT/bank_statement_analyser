@@ -9,6 +9,7 @@ import DashboardLayout from '../layouts/DashboardLayout.vue'
 import CategoryBreakdownView from '../views/CategoryBreakdownView.vue'
 import MonthlySummaryView from '../views/MonthlySummaryView.vue'
 import ReportsView from '../views/ReportsView.vue'
+import ManualAdjustmentView from "../views/ManualAdjustmentView.vue"
 
 
 
@@ -37,30 +38,29 @@ const router = createRouter({
         {
           path: '',
           name: 'dashboard',
-          component: DashboardView
+          component: DashboardView,
+          meta: { title: 'Dashboard' }
         },
         {
           path: 'category-breakdown',
-          name: 'category-breakdown',
-          component: CategoryBreakdownView
+          component: CategoryBreakdownView,
+          // meta: { title: 'Category Breakdown' }
         },
         {
           path: 'monthly-summary',
-          name: 'monthly-summary',
-          component: MonthlySummaryView
+          component: MonthlySummaryView,
+          meta: { title: 'Monthly Summary' }
         },
         {
           path: 'reports',
-          name: 'reports',
-          component: ReportsView
+          component: ReportsView,
+          meta: { title: 'Reports' }
         },
         {
           path: 'manual-adjustment',
-          name: 'manual-adjustment',
-          component: () => import('../views/ManualAdjustmentView.vue')
-
+          component: ManualAdjustmentView,
+          meta: { title: 'Manual Adjustment' }
         }
-
       ]
     },
     {

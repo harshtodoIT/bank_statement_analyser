@@ -28,72 +28,75 @@
         Income vs Expenses Overview
       </h2>
 
-      <!-- Chart Wrapper -->
-      <div class="relative flex">
+      <!-- ✅ Scroll wrapper (mobile only) -->
+      <div class="overflow-x-auto lg:overflow-x-hidden scrollbar-hide">
+        <div class="relative flex min-w-[640px]">
 
-        <!-- Y Axis -->
-        <div class="flex flex-col justify-between h-[220px] pr-4 text-sm text-gray-400">
-          <span>₹10k</span>
-          <span>₹7.5k</span>
-          <span>₹5k</span>
-          <span>₹2.5k</span>
-          <span>₹0k</span>
-        </div>
-
-        <!-- Chart Area -->
-        <div class="relative flex-1">
-
-          <!-- Grid Lines -->
-          <div class="absolute inset-0 flex flex-col justify-between">
-            <div
-              v-for="i in 5"
-              :key="i"
-              class="border-t border-dashed border-gray-200"
-            ></div>
+          <!-- Y Axis -->
+          <div class="flex flex-col justify-between h-[220px] pr-4 text-sm text-gray-400 shrink-0">
+            <span>₹10k</span>
+            <span>₹7.5k</span>
+            <span>₹5k</span>
+            <span>₹2.5k</span>
+            <span>₹0k</span>
           </div>
 
-          <!-- Bars -->
-          <div class="relative flex justify-between items-end h-[220px] px-2 ">
+          <!-- Chart Area -->
+          <div class="relative flex-1">
 
-            <div
-              v-for="month in months"
-              :key="month.name"
-              class="flex flex-col items-center w-full"
-            >
-              <div class="flex items-end gap-2 h-full">
-
-                <!-- Income -->
-                <div
-                  class="w-6 bg-green-600 rounded-md transition-all duration-700 ease-out"
-                  :style="{
-                    height: animated
-                      ? (month.income / maxValue) * chartHeight + 'px'
-                      : '0px'
-                  }"
-                ></div>
-
-                <!-- Expense -->
-                <div
-                  class="w-6 bg-blue-800 rounded-md transition-all duration-700 ease-out"
-                  :style="{
-                    height: animated
-                      ? (month.expense / maxValue) * chartHeight + 'px'
-                      : '0px'
-                  }"
-                ></div>
-
-              </div>
-
-              <!-- Month -->
-              <span class="mt-3 text-sm text-gray-500">
-                {{ month.name }}
-              </span>
+            <!-- Grid Lines -->
+            <div class="absolute inset-0 flex flex-col justify-between">
+              <div
+                v-for="i in 5"
+                :key="i"
+                class="border-t border-dashed border-gray-200"
+              ></div>
             </div>
 
-          </div>
-          <!-- Bottom X-axis line -->
+            <!-- Bars -->
+            <div class="relative flex items-end h-[220px] gap-6 px-4">
+
+              <div
+                v-for="month in months"
+                :key="month.name"
+                class="flex flex-col items-center w-[72px]"
+              >
+                <div class="flex items-end gap-2 h-full">
+
+                  <!-- Income -->
+                  <div
+                    class="w-6 bg-green-600 rounded-md transition-all duration-700 ease-out"
+                    :style="{
+                      height: animated
+                        ? (month.income / maxValue) * chartHeight + 'px'
+                        : '0px'
+                    }"
+                  ></div>
+
+                  <!-- Expense -->
+                  <div
+                    class="w-6 bg-blue-800 rounded-md transition-all duration-700 ease-out"
+                    :style="{
+                      height: animated
+                        ? (month.expense / maxValue) * chartHeight + 'px'
+                        : '0px'
+                    }"
+                  ></div>
+
+                </div>
+
+                <!-- Month -->
+                <span class="mt-3 text-sm text-gray-500">
+                  {{ month.name }}
+                </span>
+              </div>
+
+            </div>
+
+            <!-- X-axis -->
             <div class="absolute bottom-[28px] left-0 right-0 border-t border-gray-300"></div>
 
+          </div>
         </div>
       </div>
 
