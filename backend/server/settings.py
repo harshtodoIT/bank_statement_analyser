@@ -51,6 +51,7 @@ INSTALLED_APPS = [
 
     "rest_framework",
     'apps.users.apps.UsersConfig',
+    'apps.privacy.apps.PrivacyConfig',
 ]
 
 MIDDLEWARE = [

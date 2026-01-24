@@ -9,6 +9,10 @@ class ProcessingJob(models.Model):
         SUCCESS = "SUCCESS"
         FAILED = "FAILED"
 
+    class PrivacyMode(models.TextChoices):
+        TEMPORARY = "TEMPORARY"
+        PERSIST = "PERSIST"
+
     id = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
@@ -27,6 +31,12 @@ class ProcessingJob(models.Model):
     file_hash = models.CharField(max_length=64)
     bank_name = models.CharField(max_length=20)
 
+    privacy_mode = models.CharField(
+        max_length=20,
+        choices=PrivacyMode.choices,
+        default=PrivacyMode.TEMPORARY,
+    )
+
     status = models.CharField(
         max_length=20,
         choices=Status.choices,
@@ -37,6 +47,3 @@ class ProcessingJob(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return f"{self.id} | {self.status}"

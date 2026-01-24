@@ -5,10 +5,15 @@ from apps.bank_identification.detector import detect_bank_from_file
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.decorators import api_view, permission_classes
+from apps.privacy.permissions import HasPrivacyPreference
+from rest_framework.permissions import IsAuthenticated
+
 
 
 
 @api_view(["POST"])
+@permission_classes([IsAuthenticated, HasPrivacyPreference])
 def upload_statement(request):
     if request.method != "POST":
         return JsonResponse(
