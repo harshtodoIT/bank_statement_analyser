@@ -1,4 +1,5 @@
 <script setup>
+  import { useRouter } from 'vue-router'
   import { onMounted, ref } from 'vue'
   import {
     Utensils,
@@ -16,6 +17,8 @@
     icon: String,
     color: String // 'purple' | 'blue' | 'cyan' | 'gray'
   })
+  const router = useRouter()
+
 
   const progress = ref(0)
 
@@ -34,12 +37,18 @@
     transport: Car,
     healthcare: Heart
   }
+  const goToCategoryDetails = () => {
+  router.push(`/dashboard/category/${props.icon}`)
+}
+
   </script>
 
   <template>
     <div
-      class="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition cursor-pointer"
-    >
+        class="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition cursor-pointer"
+        @click="goToCategoryDetails"
+      >
+
       <!-- Top row -->
       <div class="flex items-center justify-between mb-4">
         <div class="flex items-center gap-3">

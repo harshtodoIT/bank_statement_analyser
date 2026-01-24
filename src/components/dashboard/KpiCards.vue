@@ -6,7 +6,7 @@
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex justify-between items-start">
       <div>
         <p class="text-sm text-gray-500">Total Income</p>
-        <h2 class="text-3xl font-bold text-gray-900 mt-2">$10,200</h2>
+        <h2 class="text-3xl font-bold text-gray-900 mt-2">₹10,200</h2>
         <p class="text-sm text-green-600 mt-2">+4.2% from last month</p>
       </div>
 
@@ -24,7 +24,7 @@
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex justify-between items-start">
       <div>
         <p class="text-sm text-gray-500">Total Expenses</p>
-        <h2 class="text-3xl font-bold text-gray-900 mt-2">$6,800</h2>
+        <h2 class="text-3xl font-bold text-gray-900 mt-2">₹6,800</h2>
         <p class="text-sm text-indigo-600 mt-2">+8.1% from last month</p>
       </div>
 
@@ -42,7 +42,7 @@
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex justify-between items-start">
       <div>
         <p class="text-sm text-gray-500">Current Balance</p>
-        <h2 class="text-3xl font-bold text-gray-900 mt-2">$3,400</h2>
+        <h2 class="text-3xl font-bold text-gray-900 mt-2">₹3,400</h2>
         <p class="text-sm text-gray-500 mt-2">Available balance</p>
       </div>
 

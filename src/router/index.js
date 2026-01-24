@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from "vue-router"
 
 // import HomeView from '../views/homeView.vue'
+import CategoryDetailPage from '../views/CategoryDetailPage.vue'
+
 import UploadView from '../views/UploadView.vue'
 import ProcessingView from '../views/ProcessingView.vue'
 import ErrorView from '../views/ErrorView.vue'
@@ -45,6 +47,12 @@ const router = createRouter({
           path: 'category-breakdown',
           component: CategoryBreakdownView,
           // meta: { title: 'Category Breakdown' }
+        },
+        {
+          path: 'category/:category',
+          name: 'CategoryDetail',
+          component: CategoryDetailPage,
+          meta: { title: 'Category Details' }
         },
         {
           path: 'monthly-summary',

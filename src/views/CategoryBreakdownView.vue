@@ -8,7 +8,32 @@
    * UI STATE
    * overview | details
    */
-  const activeTab = ref('overview')
+   import { useRoute, useRouter } from 'vue-router'
+
+  const route = useRoute()
+  const router = useRouter()
+
+
+  const activeTab = ref(route.query.tab || 'overview')
+        const changeTab = (tab) => {
+          activeTab.value = tab
+
+          router.replace({
+            path: '/dashboard/category-breakdown',
+            query: { tab }
+          })
+        }
+        import { watch } from 'vue'
+
+        watch(
+          () => route.query.tab,
+          (tab) => {
+            activeTab.value = tab || 'overview'
+          }
+        )
+
+
+
   </script>
 
 
@@ -24,6 +49,7 @@
         </p>
       </div>
 
+
       <!-- ================= TAB SWITCH ================= -->
       <div class="mb-8">
         <div
@@ -36,7 +62,8 @@
                 ? 'bg-white text-gray-900 shadow'
                 : 'text-gray-500'
             "
-            @click="activeTab = 'overview'"
+             @click="changeTab('overview')"
+
           >
             Overview
           </button>
@@ -48,8 +75,8 @@
                 ? 'bg-white text-gray-900 shadow'
                 : 'text-gray-500'
             "
-            @click="activeTab = 'details'"
-          >
+              @click="changeTab('details')"
+  >
             Details
           </button>
         </div>
