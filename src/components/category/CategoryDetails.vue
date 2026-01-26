@@ -47,31 +47,31 @@
   ]
   </script>
 
-  <template>
-    <div class="space-y-6">
+<template>
+  <div class="space-y-6 text-slate-200">
 
-      <!-- Header -->
-      <div class="flex items-center justify-between">
-        <h2 class="text-lg font-semibold text-gray-900">
-          Category-wise Breakdown
-        </h2>
-        <p class="text-sm text-gray-500">
-          Click on a category to view detailed transactions
-        </p>
-      </div>
-
-      <!-- Category cards grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <CategoryRow
-          v-for="category in categories"
-          :key="category.name"
-          :name="category.name"
-          :amount="category.amount"
-          :percent="category.percent"
-          :icon="category.icon"
-          :color="category.color"
-        />
-      </div>
-
+    <!-- ================= HEADER ================= -->
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2">
+      <h2 class="text-lg font-semibold text-white">
+        Category-wise Breakdown
+      </h2>
+      <p class="text-sm text-slate-400">
+        Click on a category to view detailed transactions
+      </p>
     </div>
-  </template>
+
+    <!-- ================= CATEGORY GRID ================= -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <CategoryRow
+        v-for="category in categories"
+        :key="category.name"
+        :name="category.name"
+        :amount="category.amount"
+        :percent="category.percent"
+        :icon="category.icon"
+        :color="category.color"
+      />
+    </div>
+
+  </div>
+</template>

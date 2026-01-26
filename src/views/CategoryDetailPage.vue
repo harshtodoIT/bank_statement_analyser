@@ -2,16 +2,10 @@
 <div class="p-4 sm:p-6 space-y-6 sm:space-y-8">
 
     <!-- Header -->
-<div
-  class="sticky top-0 z-30
-         bg-white
-         border-b border-gray-200
-         shadow-sm
-         flex items-start sm:items-center gap-4
-         -mx-4 px-4 py-3
-         sm:static sm:mx-0 sm:px-0 sm:py-0
-         sm:border-b-0 sm:shadow-none"
+    <div
+  class="flex items-start sm:items-center gap-4"
 >
+
 
       <button
         @click="goBack">
@@ -20,32 +14,32 @@
       </button>
 
       <div>
-        <h1 class="text-2xl font-semibold text-gray-900">
+        <h1 class="text-2xl font-semibold text-white">
           {{ categoryTitle }}
         </h1>
-        <p class="text-sm text-gray-500">
+        <p class="text-sm text-slate-400">
           Spending insights & transactions
         </p>
       </div>
     </div>
 
     <!-- Total Spent Card -->
-    <div class="rounded-2xl bg-white p-6 shadow-sm">
-      <p class="text-sm text-gray-500">Total Spent</p>
+    <div class="rounded-2xl bg-slate-800 border border-white/10 p-6">
+      <p class="text-sm text-slate-400">Total Spent</p>
 
       <div class="flex items-center gap-4 mt-2">
-        <h2 class="text-4xl font-bold text-purple-600">
+        <h2 class="text-4xl font-bold text-purple-400">
           ₹{{ totalAmount }}
         </h2>
 
-        <span class="rounded-full bg-purple-100 px-3 py-1 text-xs text-purple-600">
+        <span class="rounded-full bg-purple-500/20 px-3 py-1 text-xs text-purple-400">
           {{ percentage }}% of monthly spend
         </span>
       </div>
 
-      <div class="mt-4 h-2 w-full rounded-full bg-gray-100 overflow-hidden">
+      <div class="mt-4 h-2 w-full rounded-full bg-white/10 overflow-hidden">
         <div
-          class="h-full bg-purple-500 rounded-full"
+          class="h-full bg-purple-400 rounded-full"
           :style="{ width: percentage + '%' }"
         />
       </div>
@@ -59,13 +53,13 @@
     </div>
 
     <!-- Transactions -->
-    <div class="rounded-2xl bg-white shadow-sm">
+    <div class="rounded-2xl bg-slate-800 border border-white/10">
       <div class="px-6 py-4 border-b
          flex flex-col gap-3
          sm:flex-row sm:items-center sm:justify-between"
 >
   <!-- Title -->
-  <h3 class="text-lg font-semibold text-gray-900">
+  <h3 class="text-lg font-semibold text-white">
     Transactions
   </h3>
 
@@ -75,12 +69,16 @@
     type="text"
     placeholder="Search by merchant or bank"
     class="
-      w-full
-      sm:w-72
-      rounded-full border border-gray-200 bg-white
-      px-5 py-2.5 text-sm shadow-sm
-      focus:outline-none focus:ring-2 focus:ring-purple-400
+      w-full sm:w-72
+      rounded-full
+      border border-white/10
+      bg-slate-700
+      px-5 py-2.5 text-sm
+      text-white placeholder-slate-400
+      focus:outline-none
+      focus:ring-2 focus:ring-purple-500/40
     "
+
   />
 </div>
 
@@ -88,7 +86,7 @@
       <TransitionGroup
       name="fade"
       tag="div"
-      class="divide-y"
+      class="divide-y divide-white/5"
     >
 
         <!-- 🟣 EMPTY STATE -->
@@ -124,15 +122,15 @@
 
         <div>
           <p
-              class="font-medium text-gray-900"
+              class="font-medium text-white"
               v-html="highlightText(tx.description)"
             ></p>
-          <p class="text-sm text-gray-500">{{ tx.date }}</p>
+          <p class="text-sm text-slate-400">{{ tx.date }}</p>
         </div>
 
         <div class="flex items-center justify-between sm:justify-start gap-4 sm:gap-6 w-full sm:w-auto">
           <!-- Bank -->
-          <div class="flex items-center gap-2">
+          <div class="h-8 w-8 rounded-full bg-blue-500/20 text-blue-400">
             <div
               class="h-8 w-8 rounded-full bg-blue-100
                     flex items-center justify-center text-xs font-semibold"
@@ -140,13 +138,15 @@
               {{ tx.bank[0] }}
             </div>
             <span
-                class="text-sm text-gray-700"
-                v-html="highlightText(tx.bank)"
-              ></span>
+            class="text-sm font-medium text-slate-500"
+            v-html="highlightText(tx.bank)"
+          ></span>
+
+
           </div>
 
           <!-- Amount -->
-          <p class="font-semibold text-gray-900">
+          <p class="font-semibold text-white">
             ₹{{ tx.amount }}
           </p>
         </div>
@@ -165,6 +165,8 @@ import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
 const router = useRouter()
+
+
 
 const goBack = () => {
   router.push({
@@ -231,12 +233,13 @@ const averageSpend = computed(() =>
 const InsightCard = {
   props: ['label', 'value'],
   template: `
-    <div class="rounded-xl bg-white p-6 shadow-sm">
-      <p class="text-sm text-gray-500">{{ label }}</p>
-      <p class="mt-2 text-2xl font-semibold text-gray-900">{{ value }}</p>
+    <div class="rounded-xl bg-slate-800 border border-white/10 p-6">
+      <p class="text-sm text-slate-400">{{ label }}</p>
+      <p class="mt-2 text-2xl font-semibold text-white">{{ value }}</p>
     </div>
   `
 }
+
 </script>
 
 <style scoped>

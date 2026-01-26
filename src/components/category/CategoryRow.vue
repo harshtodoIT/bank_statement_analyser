@@ -44,56 +44,60 @@
   </script>
 
   <template>
-    <div
-        class="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition cursor-pointer"
-        @click="goToCategoryDetails"
-      >
+  <div
+    class="bg-slate-800 border border-white/10 rounded-2xl p-5
+           transition cursor-pointer
+           hover:bg-slate-700/70 hover:-translate-y-0.5"
+    @click="goToCategoryDetails"
+  >
 
-      <!-- Top row -->
-      <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center gap-3">
-          <!-- Icon -->
-          <div
-            class="w-11 h-11 rounded-xl flex items-center justify-center"
-            :class="{
-              'bg-purple-100 text-purple-600': color === 'purple',
-              'bg-blue-100 text-blue-600': color === 'blue',
-              'bg-cyan-100 text-cyan-600': color === 'cyan',
-              'bg-gray-100 text-gray-600': color === 'gray'
-            }"
-          >
-            <component :is="iconMap[icon]" size="20" />
-          </div>
+    <!-- ================= Top row ================= -->
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-3">
 
-          <!-- Name -->
-          <p class="font-semibold text-gray-800">
-            {{ name }}
-          </p>
+        <!-- Icon -->
+        <div
+          class="w-11 h-11 rounded-xl flex items-center justify-center"
+          :class="{
+            'bg-purple-500/20 text-purple-400': color === 'purple',
+            'bg-blue-500/20 text-blue-400': color === 'blue',
+            'bg-cyan-500/20 text-cyan-400': color === 'cyan',
+            'bg-slate-500/20 text-slate-400': color === 'gray'
+          }"
+        >
+          <component :is="iconMap[icon]" size="20" />
         </div>
 
-        <!-- Percentage -->
-        <p class="text-sm text-gray-500">
-          {{ percent }}%
+        <!-- Name -->
+        <p class="font-semibold text-white">
+          {{ name }}
         </p>
       </div>
 
-      <!-- Amount -->
-      <p class="text-2xl font-bold text-gray-900 mb-4">
-        ₹{{ amount.toLocaleString() }}
+      <!-- Percentage -->
+      <p class="text-sm text-slate-400">
+        {{ percent }}%
       </p>
-
-      <!-- Progress bar -->
-      <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
-        <div
-          class="h-full rounded-full transition-all duration-700 ease-out"
-          :class="{
-            'bg-purple-500': color === 'purple',
-            'bg-blue-500': color === 'blue',
-            'bg-cyan-500': color === 'cyan',
-            'bg-gray-400': color === 'gray'
-          }"
-          :style="{ width: progress + '%' }"
-        ></div>
-      </div>
     </div>
-  </template>
+
+    <!-- ================= Amount ================= -->
+    <p class="text-2xl font-bold text-white mb-4">
+      ₹{{ amount.toLocaleString() }}
+    </p>
+
+    <!-- ================= Progress bar ================= -->
+    <div class="h-2 bg-white/10 rounded-full overflow-hidden">
+      <div
+        class="h-full rounded-full transition-all duration-700 ease-out"
+        :class="{
+          'bg-purple-400': color === 'purple',
+          'bg-blue-400': color === 'blue',
+          'bg-cyan-400': color === 'cyan',
+          'bg-slate-400': color === 'gray'
+        }"
+        :style="{ width: progress + '%' }"
+      ></div>
+    </div>
+
+  </div>
+</template>

@@ -1,5 +1,28 @@
 <script setup>
   // import { useRoute } from 'vue-router'
+  import { computed } from "vue"
+  // const activeClass =
+  // "bg-indigo-600 text-white hover:bg-indigo-600"
+
+
+  const exactActiveClass =
+  "bg-indigo-500/20 text-indigo-400 shadow-[inset_3px_0_0_#6366f1]"
+
+
+  import { ref, onMounted, onUnmounted } from "vue"
+
+const isDesktop = ref(window.innerWidth >= 1024)
+
+const handleResize = () => {
+  isDesktop.value = window.innerWidth >= 1024
+}
+
+onMounted(() => window.addEventListener("resize", handleResize))
+onUnmounted(() => window.removeEventListener("resize", handleResize))
+
+const effectiveOpen = computed(() => {
+  return isDesktop.value ? props.isOpen : true
+})
 
   import {
     LayoutDashboard,
@@ -10,11 +33,28 @@
     ChevronLeft
   } from 'lucide-vue-next'
 
-  defineProps({
-    isOpen: Boolean
-  })
+  const props = defineProps({
+  isOpen: Boolean
+})
 
-  const emit = defineEmits(['toggle'])
+
+  const emit = defineEmits(["toggle", "close-mobile"])
+  const handleToggle = () => {
+  if (window.innerWidth < 1024) {
+    // Mobile → just close sidebar
+    emit("close-mobile")
+  } else {
+    // Desktop → collapse sidebar
+    emit("toggle")
+  }
+}
+
+const handleNavClick = () => {
+  if (window.innerWidth < 1024) {
+    emit("close-mobile")
+  }
+}
+
   // const route = useRoute()
   </script>
 
@@ -26,7 +66,7 @@
           transition-all duration-300"
         :class="[
         'w-[80vw] max-w-[280px]',
-        isOpen ? 'lg:w-64' : 'lg:w-20'
+        effectiveOpen ? 'lg:w-64' : 'lg:w-20'
       ]"
   >
 
@@ -39,7 +79,7 @@
 <!-- Text -->
 <div
   class="flex-1 overflow-hidden transition-all duration-300"
-  :class="isOpen ? 'opacity-100 max-w-[180px]' : 'opacity-0 max-w-0'"
+  :class="effectiveOpen ? 'opacity-100 max-w-[180px]' : 'opacity-0 max-w-0'"
 >
   <span class="text-white font-semibold text-sm block">
     Bank Statement Analyzer
@@ -51,11 +91,12 @@
 
 <!-- Toggle -->
 <button
-  @click="emit('toggle')"
+  @click="handleToggle"
   class="p-2 rounded-lg hover:bg-white/10 text-gray-300 transition"
 >
-  <component :is="isOpen ? ChevronLeft : Menu" size="20" />
+  <component :is="effectiveOpen ? ChevronLeft : Menu" size="20" />
 </button>
+
 
 </div>
 
@@ -64,20 +105,21 @@
 
         <router-link
           to="/dashboard"
-          class="flex items-center px-3 py-2 rounded-lg
-       transition-colors duration-200
-       hover:bg-indigo-600 hover:text-white"
-:class="isOpen ? 'gap-3 justify-start' : 'justify-center'"
+          :exact-active-class="exactActiveClass"
+          @click="handleNavClick"
+          class="group relative flex items-center px-3 py-2 rounded-lg
+         transition-colors duration-200
+         hover:bg-indigo-600 hover:text-white"
+    :class="effectiveOpen ? 'gap-3 justify-start' : 'justify-center'"
+>
 
-
-        >
           <LayoutDashboard size="18" />
           <span
-  class="whitespace-nowrap overflow-hidden transition-all duration-300"
-  :class="isOpen
-    ? 'opacity-100 translate-x-0 max-w-[160px]'
-    : 'opacity-0 -translate-x-2 max-w-0'"
->
+          class="whitespace-nowrap overflow-hidden transition-all duration-300"
+          :class="effectiveOpen
+            ? 'opacity-100 translate-x-0 max-w-[160px]'
+            : 'opacity-0 -translate-x-2 max-w-0'"
+        >
   Dashboard
 </span>
 
@@ -85,30 +127,34 @@
 
         <router-link
           to="/dashboard/category-breakdown"
-          class="flex items-center px-3 py-2 rounded-lg
+          :exact-active-class="exactActiveClass"
+          @click="handleNavClick"
+          class="group relative flex items-center px-3 py-2 rounded-lg
        transition-colors duration-200
        hover:bg-indigo-600 hover:text-white"
-:class="isOpen ? 'gap-3 justify-start' : 'justify-center'"
+:class="effectiveOpen ? 'gap-3 justify-start' : 'justify-center'"
 
         >
           <PieChart size="18" />
           <span class="whitespace-nowrap transition-all duration-300 overflow-hidden"
-  :class="isOpen
+  :class="effectiveOpen
     ? 'opacity-100 translate-x-0 w-auto'
     : 'opacity-0 -translate-x-2 w-0'">Category Breakdown</span>
         </router-link>
 
         <router-link
           to="/dashboard/monthly-summary"
-          class="flex items-center px-3 py-2 rounded-lg
+          :exact-active-class="exactActiveClass"
+          @click="handleNavClick"
+          class="group relative flex items-center px-3 py-2 rounded-lg
        transition-colors duration-200
        hover:bg-indigo-600 hover:text-white"
-:class="isOpen ? 'gap-3 justify-start' : 'justify-center'"
+:class="effectiveOpen ? 'gap-3 justify-start' : 'justify-center'"
 
         >
           <Calendar size="18" />
           <span class="whitespace-nowrap transition-all duration-300 overflow-hidden"
-  :class="isOpen
+  :class="effectiveOpen
     ? 'opacity-100 translate-x-0 w-auto'
     : 'opacity-0 -translate-x-2 w-0'">Monthly Summary</span>
         </router-link>
@@ -116,15 +162,17 @@
 
         <router-link
             to="/dashboard/manual-adjustment"
-                  class="flex items-center px-3 py-2 rounded-lg
+            @click="handleNavClick"
+            :exact-active-class="exactActiveClass"
+            class="group relative flex items-center px-3 py-2 rounded-lg
                 transition-colors duration-200
                   hover:bg-indigo-600 hover:text-white"
-                :class="isOpen ? 'gap-3 justify-start' : 'justify-center'"
+                :class="effectiveOpen ? 'gap-3 justify-start' : 'justify-center'"
 
             >
   <SlidersHorizontal size="18" />
   <span class="whitespace-nowrap transition-all duration-300 overflow-hidden"
-  :class="isOpen
+  :class="effectiveOpen
     ? 'opacity-100 translate-x-0 w-auto'
     : 'opacity-0 -translate-x-2 w-0'">Manual Adjustment</span>
 </router-link>

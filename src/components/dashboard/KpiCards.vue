@@ -3,14 +3,14 @@
   <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
 
     <!-- Total Income -->
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex justify-between items-start">
+    <div class="bg-slate-800 rounded-2xl shadow-sm border border-white/5 p-6 flex justify-between items-start">
       <div>
-        <p class="text-sm text-gray-500">Total Income</p>
-        <h2 class="text-3xl font-bold text-gray-900 mt-2">₹10,200</h2>
+        <p class="text-sm text-slate-400">Total Income</p>
+        <h2 class="text-3xl font-bold text-white">₹10,200</h2>
         <p class="text-sm text-green-600 mt-2">+4.2% from last month</p>
       </div>
 
-      <div class="bg-green-100 text-green-600 rounded-xl p-3 h-fit">
+      <div class="bg-green-500/20 text-green-400 rounded-xl p-3 h-fit">
         <!-- Up arrow icon -->
         <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none"
           viewBox="0 0 24 24" stroke="currentColor">
@@ -21,14 +21,14 @@
     </div>
 
     <!-- Total Expenses -->
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex justify-between items-start">
+    <div class="bg-slate-800 rounded-2xl shadow-sm border border-white/5 p-6 flex justify-between items-start">
       <div>
-        <p class="text-sm text-gray-500">Total Expenses</p>
-        <h2 class="text-3xl font-bold text-gray-900 mt-2">₹6,800</h2>
+        <p class="text-sm text-slate-400">Total Expenses</p>
+        <h2 class="text-3xl font-bold text-white mt-2">₹6,800</h2>
         <p class="text-sm text-indigo-600 mt-2">+8.1% from last month</p>
       </div>
 
-      <div class="bg-indigo-100 text-indigo-600 rounded-xl p-3 h-fit">
+      <div class="bg-indigo-500/20 text-indigo-400 rounded-xl p-3 h-fit">
         <!-- Down arrow icon -->
         <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none"
           viewBox="0 0 24 24" stroke="currentColor">
@@ -39,14 +39,14 @@
     </div>
 
     <!-- Current Balance -->
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex justify-between items-start">
+    <div class="bg-slate-800 rounded-2xl shadow-sm border border-white/5 p-6 flex justify-between items-start">
       <div>
-        <p class="text-sm text-gray-500">Current Balance</p>
-        <h2 class="text-3xl font-bold text-gray-900 mt-2">₹3,400</h2>
+        <p class="text-sm text-slate-400">Current Balance</p>
+        <h2 class="text-3xl font-bold text-white mt-2">₹3,400</h2>
         <p class="text-sm text-gray-500 mt-2">Available balance</p>
       </div>
 
-      <div class="bg-gray-100 text-gray-600 rounded-xl p-3 h-fit">
+      <div class="bg-slate-700 text-slate-300 rounded-xl p-3 h-fit">
         <!-- Wallet icon -->
         <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none"
           viewBox="0 0 24 24" stroke="currentColor">

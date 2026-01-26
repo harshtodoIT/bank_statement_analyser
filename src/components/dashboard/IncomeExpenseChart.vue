@@ -23,8 +23,8 @@
   </script>
 
   <template>
-    <div class="bg-white rounded-2xl p-6 shadow-sm">
-      <h2 class="text-lg font-semibold mb-6">
+    <div class="bg-slate-800 rounded-2xl p-6 border border-white/5">
+      <h2 class="text-lg font-semibold text-white mb-6">
         Income vs Expenses Overview
       </h2>
 
@@ -33,7 +33,7 @@
         <div class="relative flex min-w-[640px]">
 
           <!-- Y Axis -->
-          <div class="flex flex-col justify-between h-[220px] pr-4 text-sm text-gray-400 shrink-0">
+          <div class="flex flex-col justify-between h-[220px] pr-4 text-sm text-slate-400 shrink-0">
             <span>₹10k</span>
             <span>₹7.5k</span>
             <span>₹5k</span>
@@ -49,7 +49,7 @@
               <div
                 v-for="i in 5"
                 :key="i"
-                class="border-t border-dashed border-gray-200"
+                class="border-t border-dashed border-white/10"
               ></div>
             </div>
 
@@ -65,7 +65,9 @@
 
                   <!-- Income -->
                   <div
-                    class="w-6 bg-green-600 rounded-md transition-all duration-700 ease-out"
+                    class="w-6 rounded-md transition-all duration-700 ease-out
+                          bg-gradient-to-t from-emerald-700 via-emerald-600 to-emerald-400
+                          shadow-[0_0_14px_rgba(16,185,129,0.28)]"
                     :style="{
                       height: animated
                         ? (month.income / maxValue) * chartHeight + 'px'
@@ -73,20 +75,24 @@
                     }"
                   ></div>
 
+
                   <!-- Expense -->
                   <div
-                    class="w-6 bg-blue-800 rounded-md transition-all duration-700 ease-out"
-                    :style="{
-                      height: animated
-                        ? (month.expense / maxValue) * chartHeight + 'px'
-                        : '0px'
-                    }"
-                  ></div>
+                  class="w-6 rounded-md transition-all duration-700 ease-out
+                        bg-gradient-to-t from-sky-700 via-sky-600 to-sky-400
+                        shadow-[0_0_14px_rgba(14,165,233,0.28)]"
+                  :style="{
+                    height: animated
+                      ? (month.expense / maxValue) * chartHeight + 'px'
+                      : '0px'
+                  }"
+                ></div>
+
 
                 </div>
 
                 <!-- Month -->
-                <span class="mt-3 text-sm text-gray-500">
+                <span class="mt-3 text-sm text-slate-400">
                   {{ month.name }}
                 </span>
               </div>
@@ -94,20 +100,20 @@
             </div>
 
             <!-- X-axis -->
-            <div class="absolute bottom-[28px] left-0 right-0 border-t border-gray-300"></div>
+            <div class="absolute bottom-[28px] left-0 right-0 border-t border-white/20"></div>
 
           </div>
         </div>
       </div>
 
       <!-- Legend -->
-      <div class="flex justify-center gap-6 mt-6 text-sm text-gray-600">
+      <div class="flex justify-center gap-6 mt-6 text-sm text-slate-300">
         <div class="flex items-center gap-2">
-          <span class="w-3 h-3 rounded-full bg-green-600"></span>
+          <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
           Income
         </div>
         <div class="flex items-center gap-2">
-          <span class="w-3 h-3 rounded-full bg-blue-800"></span>
+          <span class="w-3 h-3 rounded-full bg-sky-500"></span>
           Expenses
         </div>
       </div>
