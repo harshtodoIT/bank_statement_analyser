@@ -1,79 +1,67 @@
-import os
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.conf import settings
 from django.shortcuts import get_object_or_404
 from .worker import start_async_job
 from .models import ProcessingJob
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.exceptions import PermissionDenied
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework import status
+
+from apps.privacy.permissions import HasPrivacyPreference
 
 
-@csrf_exempt
+@api_view(["POST"])
+@permission_classes([IsAuthenticated, HasPrivacyPreference])
 def start_processing(request):
-    if request.method != "POST":
-        return JsonResponse(
-            {"error": "Only POST method is allowed."},
-            status=405
-        )
-
-    file_hash = request.POST.get("file_hash")
-    session_id = request.POST.get("session_id")
+    file_hash = request.data.get("file_hash")
+    session_id = request.data.get("session_id")
 
     if not file_hash:
-        return JsonResponse(
-            {"error": "file_hash is required."},
-            status=400
+        return Response(
+            {"error": "file_hash is required"},
+            status=status.HTTP_400_BAD_REQUEST,
         )
 
     if not session_id:
-        return JsonResponse(
-            {"error": "session_id is required."},
-            status=400
+        return Response(
+            {"error": "session_id is required"},
+            status=status.HTTP_400_BAD_REQUEST,
         )
 
-    tmp_root = settings.MEDIA_ROOT / "tmp" / session_id
-
-    if not tmp_root.exists():
-        return JsonResponse(
-            {"error": "Upload session not found."},
-            status=404
-        )
-
-    files = [f for f in tmp_root.iterdir() if f.is_file()]
-    if not files:
-        return JsonResponse(
-            {"error": "Uploaded file not found."},
-            status=404
-        )
+    # ✅ COPY PRIVACY MODE FROM USER PROFILE (CRITICAL FIX)
+    privacy_mode = request.user.profile.data_retention_preference
 
     job = ProcessingJob.objects.create(
+        user=request.user,
         session_id=session_id,
         file_hash=file_hash,
         bank_name="UNKNOWN",
+        privacy_mode=privacy_mode,
         status=ProcessingJob.Status.PENDING,
     )
 
     start_async_job(job.id)
 
-    return JsonResponse({
-        "job_id": str(job.id),
-        "status": job.status
-    })
+    return Response(
+        {
+            "job_id": str(job.id),
+            "status": job.status,
+        },
+        status=status.HTTP_201_CREATED,
+    )
 
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated, HasPrivacyPreference])
 def process_status(request, job_id):
-    if request.method != "GET":
-        return JsonResponse(
-            {"error": "Only GET method is allowed."},
-            status=405
-        )
-
     job = get_object_or_404(ProcessingJob, id=job_id)
 
-    response = {
-        "status": job.status
-    }
+    if job.user and job.user != request.user:
+        raise PermissionDenied("You do not have access to this job.")
+
+    response = {"status": job.status}
 
     if job.status == ProcessingJob.Status.FAILED:
         response["error"] = job.error_message
 
-    return JsonResponse(response)
-
+    return Response(response)

@@ -5,21 +5,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def delete_file(file_path):
-    """
-    Deletes a single file safely.
-    """
-    try:
-        if file_path and os.path.exists(file_path):
-            os.remove(file_path)
-            logger.info(f"Deleted file: {file_path}")
-    except Exception as e:
-        logger.error(f"Failed to delete file {file_path}: {str(e)}")
-
-
 def delete_folder(folder_path):
     """
-    Deletes a folder and all its contents.
+    Deletes a folder and all its contents safely.
+    Used for TEMPORARY privacy mode cleanup.
     """
     try:
         if folder_path and os.path.exists(folder_path):

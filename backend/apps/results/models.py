@@ -1,10 +1,12 @@
 import uuid
 from django.db import models
+from django.conf import settings
 
 
 class ProcessingResult(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     categorized_summary = models.JSONField(null=True, blank=True)
+    categorized_transactions = models.JSONField(null=True, blank=True)
 
     job_id = models.UUIDField(unique=True)
     status = models.CharField(max_length=20)
@@ -19,6 +21,14 @@ class ProcessingResult(models.Model):
     error = models.TextField(null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
+
+    user = models.ForeignKey(
+    settings.AUTH_USER_MODEL,
+    null=True,
+    blank=True,
+    on_delete=models.SET_NULL,
+    related_name="processing_results",
+)
 
     def __str__(self):
         return f"{self.job_id} - {self.status}"
