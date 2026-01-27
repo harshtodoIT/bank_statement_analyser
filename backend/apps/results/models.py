@@ -6,6 +6,7 @@ from django.conf import settings
 class ProcessingResult(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     categorized_summary = models.JSONField(null=True, blank=True)
+    categorized_transactions = models.JSONField(null=True, blank=True)
 
     job_id = models.UUIDField(unique=True)
     status = models.CharField(max_length=20)

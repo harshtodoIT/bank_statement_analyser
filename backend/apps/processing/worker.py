@@ -111,7 +111,12 @@ def run_processing_job(job_id):
         validate_transactions(structured_transactions)
 
         computed = compute_all(structured_transactions)
-        category_summary = categorize_transactions(structured_transactions)
+        category_data = categorize_transactions(structured_transactions)
+        # ✅ Inject bank_name into each transaction snapshot
+        for tx_list in category_data["transactions"].values():
+            for tx in tx_list:
+                tx["bank_name"] = job.bank_name
+                
         total_transactions = len(structured_transactions)
 
         # ---- PERSIST IF REQUIRED ----
@@ -130,10 +135,12 @@ def run_processing_job(job_id):
             totals=computed["totals"],
             monthly_summary=computed["monthly_summary"],
             net_cash_flow=computed["net_cash_flow"],
-            categorized_summary=category_summary,
+            categorized_summary=category_data["summary"],
+            categorized_transactions=category_data["transactions"],  # ✅
             total_transactions=total_transactions,
             bank_name=job.bank_name,
         )
+
 
         job.status = ProcessingJob.Status.SUCCESS
         job.save(update_fields=["status"])
