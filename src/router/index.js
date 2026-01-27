@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from "vue-router"
 
 // import HomeView from '../views/homeView.vue'
 import CategoryDetailPage from '../views/CategoryDetailPage.vue'
-
+import PrivacyDisclosure from '../views/PrivacyDisclosure.vue'
 import UploadView from '../views/UploadView.vue'
 import ProcessingView from '../views/ProcessingView.vue'
 import ErrorView from '../views/ErrorView.vue'
@@ -19,6 +19,11 @@ import ManualAdjustmentView from "../views/ManualAdjustmentView.vue"
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    {
+      path: '/privacy',
+      name: 'PrivacyDisclosure',
+      component: PrivacyDisclosure,
+    },
     {
       path: '/',
       redirect: '/upload'
@@ -68,7 +73,12 @@ const router = createRouter({
           path: 'manual-adjustment',
           component: ManualAdjustmentView,
           meta: { title: 'Manual Adjustment' }
+        },
+        {
+          path: 'history',
+          component: () => import('../views/HistoryView.vue')
         }
+
       ]
     },
     {
@@ -79,5 +89,17 @@ const router = createRouter({
 
   ],
 })
+
+router.beforeEach((to, from, next) => {
+  const privacyAccepted = localStorage.getItem("privacyAccepted")
+
+  // If user tries to go to upload without accepting privacy
+  if (to.path === "/upload" && !privacyAccepted) {
+    next("/privacy") // force privacy page
+  } else {
+    next() // allow navigation
+  }
+})
+
 
 export default router

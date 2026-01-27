@@ -30,7 +30,8 @@ const effectiveOpen = computed(() => {
     Calendar,
     SlidersHorizontal,
     Menu,
-    ChevronLeft
+    ChevronLeft,
+    History
   } from 'lucide-vue-next'
 
   const props = defineProps({
@@ -176,6 +177,27 @@ const handleNavClick = () => {
     ? 'opacity-100 translate-x-0 w-auto'
     : 'opacity-0 -translate-x-2 w-0'">Manual Adjustment</span>
 </router-link>
+
+<router-link
+  to="/dashboard/history"
+  :exact-active-class="exactActiveClass"
+  @click="handleNavClick"
+  class="group relative flex items-center px-3 py-2 rounded-lg
+         transition-colors duration-200
+         hover:bg-indigo-600 hover:text-white"
+  :class="effectiveOpen ? 'gap-3 justify-start' : 'justify-center'"
+>
+  <History size="18" />
+  <span
+    class="whitespace-nowrap transition-all duration-300 overflow-hidden"
+    :class="effectiveOpen
+      ? 'opacity-100 translate-x-0 w-auto'
+      : 'opacity-0 -translate-x-2 w-0'"
+  >
+    History
+  </span>
+</router-link>
+
 
       </nav>
 
