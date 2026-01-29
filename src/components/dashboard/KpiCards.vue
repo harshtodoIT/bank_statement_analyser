@@ -1,34 +1,91 @@
 <script setup>
-  import { useDashboardStore } from "../../stores/dashboard.store";
-  const dashboardStore = useDashboardStore();
-  </script>
+import { computed } from "vue"
+import { useDashboardStore } from "../../stores/dashboard.store"
 
-  <template>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+const dashboardStore = useDashboardStore()
 
-      <div class="bg-white rounded-2xl p-6 shadow-sm relative">
-        <div class="absolute right-3 top-6 h-12 w-1 bg-green-500 rounded"></div>
-        <p class="text-sm text-gray-500">Total Income</p>
-        <p class="text-3xl font-semibold text-green-600">
-          ₹{{ dashboardStore.totals.income.toFixed(2) }}
+// ✅ SAFE COMPUTED VALUES
+const income = computed(() => dashboardStore.totals?.income ?? 0)
+const expense = computed(() => dashboardStore.totals?.expense ?? 0)
+const netCashFlow = computed(
+  () => dashboardStore.netCashFlowWithManual ?? 0
+)
+</script>
+
+<template>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+
+    <!-- Total Income -->
+    <div
+      class="bg-slate-800 rounded-2xl shadow-sm border border-white/5
+             p-6 flex justify-between items-start"
+    >
+      <div>
+        <p class="text-sm text-slate-400">Total Income</p>
+        <h2 class="text-3xl font-bold text-white">
+          ₹{{ income.toFixed(2) }}
+        </h2>
+        <p class="text-sm text-green-600 mt-2">
+          Total credited amount
         </p>
       </div>
 
-      <div class="bg-white rounded-2xl p-6 shadow-sm relative">
-        <div class="absolute right-3 top-6 h-12 w-1 bg-red-500 rounded"></div>
-        <p class="text-sm text-gray-500">Total Expenses</p>
-        <p class="text-3xl font-semibold text-red-600">
-          ₹{{ dashboardStore.totals.expense.toFixed(2) }}
-        </p>
+      <div class="bg-green-500/20 text-green-400 rounded-xl p-3 h-fit">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none"
+             viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M5 10l7-7m0 0l7 7m-7-7v18" />
+        </svg>
       </div>
-
-      <div class="bg-white rounded-2xl p-6 shadow-sm relative">
-        <div class="absolute right-3 top-6 h-12 w-1 bg-blue-500 rounded"></div>
-        <p class="text-sm text-gray-500">Net Cash Flow</p>
-        <p class="text-3xl font-semibold text-blue-600">
-          ₹{{ dashboardStore.netCashFlowWithManual.toFixed(2) }}
-        </p>
-      </div>
-
     </div>
-  </template>
+
+    <!-- Total Expenses -->
+    <div
+      class="bg-slate-800 rounded-2xl shadow-sm border border-white/5
+             p-6 flex justify-between items-start"
+    >
+      <div>
+        <p class="text-sm text-slate-400">Total Expenses</p>
+        <h2 class="text-3xl font-bold text-white mt-2">
+          ₹{{ expense.toFixed(2) }}
+        </h2>
+        <p class="text-sm text-indigo-600 mt-2">
+          Total debited amount
+        </p>
+      </div>
+
+      <div class="bg-indigo-500/20 text-indigo-400 rounded-xl p-3 h-fit">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none"
+             viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+        </svg>
+      </div>
+    </div>
+
+    <!-- Net Cash Flow -->
+    <div
+      class="bg-slate-800 rounded-2xl shadow-sm border border-white/5
+             p-6 flex justify-between items-start"
+    >
+      <div>
+        <p class="text-sm text-slate-400">Net Cash Flow</p>
+        <h2 class="text-3xl font-bold text-white mt-2">
+          ₹{{ netCashFlow.toFixed(2) }}
+        </h2>
+        <p class="text-sm text-slate-500 mt-2">
+          After manual adjustments
+        </p>
+      </div>
+
+      <div class="bg-slate-700 text-slate-300 rounded-xl p-3 h-fit">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none"
+             viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2m4-3h-6a2 2 0 000 4h6v-4z" />
+        </svg>
+      </div>
+    </div>
+
+  </div>
+</template>

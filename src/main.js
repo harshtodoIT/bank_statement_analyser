@@ -1,13 +1,11 @@
 import { createApp } from "vue"
 import { createPinia } from "pinia"
 import App from "./App.vue"
-import { clerkPlugin } from "@clerk/vue"
 import router from "./router"
+import { clerkPlugin } from "@clerk/vue"
 
-// ✅ IMPORTANT: load Tailwind
+// styles
 import "./assets/styles/main.css"
-
-const app = createApp(App)
 
 const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
@@ -15,8 +13,9 @@ if (!publishableKey) {
   throw new Error("Missing Clerk publishable key")
 }
 
-const pinia = createPinia()
-app.use(pinia)
+const app = createApp(App)
+
+app.use(createPinia())
 app.use(router)
 
 app.use(clerkPlugin, {

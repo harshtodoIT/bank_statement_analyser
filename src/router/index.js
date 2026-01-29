@@ -1,99 +1,91 @@
 import { createRouter, createWebHistory } from "vue-router"
+import { useProcessingStore } from "../stores/processing.store"
 
+import LoginView from "../views/LoginView.vue"
 import UploadView from "../views/UploadView.vue"
 import ProcessingView from "../views/ProcessingView.vue"
-import ErrorView from "../views/ErrorView.vue"
-import DashboardView from "../views/DashboardView.vue"
+
 import DashboardLayout from "../layouts/DashboardLayout.vue"
+import DashboardView from "../views/DashboardView.vue"
 import CategoryBreakdownView from "../views/CategoryBreakdownView.vue"
+import CategoryDetailPage from "../views/CategoryDetailPage.vue"
 import MonthlySummaryView from "../views/MonthlySummaryView.vue"
-import ReportsView from "../views/ReportsView.vue"
-import HomeView from "../views/homeView.vue"
+import ManualAdjustmentView from "../views/ManualAdjustmentView.vue"
+import HistoryView from "../views/HistoryView.vue"
+
+import ErrorView from "../views/ErrorView.vue"
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    {
-      path: "/",
-      name: "Home",
-      component: HomeView,
-      meta: { public: true },
-    },
+    { path: "/", redirect: "/upload" },
 
-    {
-      path: "/upload",
-      name: "Upload",
-      component: UploadView,
-      meta: { requiresAuth: true },
-    },
+    { path: "/login", component: LoginView },
 
-    {
-      path: "/processing",
-      name: "Processing",
-      component: ProcessingView,
-      meta: { requiresAuth: true },
-    },
+    { path: "/upload", component: UploadView },
+    { path: "/processing", component: ProcessingView },
 
     {
       path: "/dashboard",
       component: DashboardLayout,
-      meta: { requiresAuth: true },
       children: [
         {
           path: "",
-          name: "dashboard",
           component: DashboardView,
         },
+
         {
           path: "category-breakdown",
           component: CategoryBreakdownView,
         },
+
+        // ✅ CATEGORY DRILL-DOWN PAGE
+        {
+          path: "category/:category",
+          component: CategoryDetailPage,
+        },
+
         {
           path: "monthly-summary",
           component: MonthlySummaryView,
         },
         {
-          path: "reports",
-          component: ReportsView,
+          path: "manual-adjustment",
+          component: ManualAdjustmentView,
         },
         {
-          path: "manual-adjustment",
-          component: () =>
-            import("../views/ManualAdjustmentView.vue"),
+          path: "history",
+          component: HistoryView,
         },
       ],
     },
 
-    {
-      path: "/error",
-      component: ErrorView,
-    },
-
-    {
-      path: "/:pathMatch(.*)*",
-      redirect: "/",
-    },
+    { path: "/error", component: ErrorView },
+    { path: "/:pathMatch(.*)*", redirect: "/dashboard" },
   ],
 })
 
-/**
- * 🔐 GLOBAL AUTH GUARD (CLERK SAFE)
- */
 router.beforeEach(async (to) => {
   const clerk = window.Clerk
-
   if (!clerk) return true
 
   await clerk.load()
-
   const isSignedIn = !!clerk.user
+  const processingStore = useProcessingStore()
 
-  if (to.meta.requiresAuth && !isSignedIn) {
-    return "/"
+  // 🔒 NOT SIGNED IN
+  if (!isSignedIn) {
+    return to.path === "/login" ? true : "/login"
   }
 
-  if (to.meta.public && isSignedIn && to.path === "/") {
-    return "/upload"
+  // 🔄 PROCESSING ACTIVE → LOCK EVERYTHING EXCEPT PROCESSING
+  if (processingStore.jobId && processingStore.status === "PROCESSING") {
+    return to.path === "/processing" ? true : "/processing"
+  }
+
+  // 🚫 PROCESSING DONE → BLOCK PROCESSING PAGE
+  if (processingStore.status === "SUCCESS" && to.path === "/processing") {
+    return "/dashboard"
   }
 
   return true

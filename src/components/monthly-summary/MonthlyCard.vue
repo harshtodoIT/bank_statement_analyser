@@ -1,3 +1,12 @@
+<script setup>
+defineProps({
+  month: String,
+  income: Number,
+  expenses: Number,
+  net_cash_flow: Number
+})
+</script>
+
 <template>
   <div
     class="bg-white rounded-xl border p-4 sm:p-5 shadow-sm
@@ -25,19 +34,12 @@
           class="font-semibold flex items-center gap-1"
           :class="net_cash_flow >= 0 ? 'text-green-600' : 'text-red-600'"
         >
-          <span>{{ net_cash_flow >= 0 ? ':arrow_upper_right:' : ':arrow_lower_right:' }}</span>
+          <span>
+            {{ net_cash_flow >= 0 ? ':arrow_upper_right:' : ':arrow_lower_right:' }}
+          </span>
           ₹{{ Math.abs(net_cash_flow) }}
         </span>
       </div>
     </div>
   </div>
 </template>
-
-<script setup>
-defineProps({
-  month: String,
-  income: Number,
-  expenses: Number,
-  net_cash_flow: Number
-})
-</script>
