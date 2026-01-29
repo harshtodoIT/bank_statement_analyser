@@ -10,7 +10,6 @@ import DashboardView from '../views/DashboardView.vue'
 import DashboardLayout from '../layouts/DashboardLayout.vue'
 import CategoryBreakdownView from '../views/CategoryBreakdownView.vue'
 import MonthlySummaryView from '../views/MonthlySummaryView.vue'
-import ReportsView from '../views/ReportsView.vue'
 import ManualAdjustmentView from "../views/ManualAdjustmentView.vue"
 
 
@@ -63,11 +62,6 @@ const router = createRouter({
           path: 'monthly-summary',
           component: MonthlySummaryView,
           meta: { title: 'Monthly Summary' }
-        },
-        {
-          path: 'reports',
-          component: ReportsView,
-          meta: { title: 'Reports' }
         },
         {
           path: 'manual-adjustment',

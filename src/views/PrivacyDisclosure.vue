@@ -204,23 +204,34 @@
 <script setup>
 import { ref, computed } from "vue"
 import { useRouter } from "vue-router"
+import InfoCard from "../components/icon/InfoCard.vue"
 
 const router = useRouter()
+
+// IMPORTANT: real null
+const storageChoice = ref(null)
+
+// Checkbox is optional now
+const accepted = ref(false)
+
 const canContinue = computed(() => {
-  return accepted.value === true && storageChoice.value !== null
+  return storageChoice.value !== null
+})
+
+const storageMessage = computed(() => {
+  if (storageChoice.value === "save") {
+    return "Your data will be securely stored in memory and available for future sessions."
+  }
+  if (storageChoice.value === "nosave") {
+    return "Your data will be processed securely and deleted automatically after this session."
+  }
+  return "Please select a data storage preference to continue."
 })
 
 const handleContinue = () => {
   localStorage.setItem("privacyAccepted", "true")
+  localStorage.setItem("storagePreference", storageChoice.value)
   router.push("/upload")
 }
-
-import InfoCard from "../components/icon/InfoCard.vue"
-const storageChoice = ref("null")
-const accepted = ref(false)
-const storageMessage = computed(() => {
-  return storageChoice.value === "save"
-    ? "Your data will be securely stored in memory and available for future sessions."
-    : "Your data will be processed securely and deleted automatically after this session."
-})
 </script>
+
