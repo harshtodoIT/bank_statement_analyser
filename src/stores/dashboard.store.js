@@ -7,12 +7,16 @@ export const useDashboardStore = defineStore("dashboard", {
       income: 0,
       expense: 0,
     },
+
+    // ✅ single source of truth from backend
+    netCashFlowWithManual: 0,
+    manualAdjustments: [],
+
     monthlySummary: {},
     bankName: "-",
     totalTransactions: 0,
-    manualAdjustment: 0,
 
-    // ✅ CATEGORY DATA (SAFE DEFAULTS)
+    // categories
     incomeCategories: [],
     expenseCategories: [],
     uncategorizedAmount: 0,
@@ -26,14 +30,11 @@ export const useDashboardStore = defineStore("dashboard", {
     netCashFlow(state) {
       return Number(state.totals.income) - Number(state.totals.expense)
     },
-    netCashFlowWithManual(state) {
-      return this.netCashFlow + Number(state.manualAdjustment)
-    },
   },
 
   actions: {
     async fetchDashboardData(jobId) {
-      if (this.loading || this.loaded) return
+      if (this.loading) return
 
       this.loading = true
       this.error = null
@@ -42,11 +43,18 @@ export const useDashboardStore = defineStore("dashboard", {
         const response = await getDashboardResults(jobId)
         const data = response.data ?? response
 
-        // ===== TOTALS =====
+        // totals
         this.totals.income = Number(data?.totals?.credit ?? 0)
         this.totals.expense = Number(data?.totals?.debit ?? 0)
 
-        // ===== MONTHLY =====
+        // ✅ authoritative value
+        this.netCashFlowWithManual = Number(
+          data?.net_cash_flow_with_manual ?? data?.net_cash_flow ?? 0
+        )
+
+        this.manualAdjustments = data?.manual_adjustments ?? []
+
+        // monthly
         const mappedMonthly = {}
         for (const [month, values] of Object.entries(data?.monthly_summary ?? {})) {
           mappedMonthly[month] = {
@@ -58,9 +66,8 @@ export const useDashboardStore = defineStore("dashboard", {
 
         this.bankName = data?.bank_name ?? "-"
         this.totalTransactions = Number(data?.total_transactions ?? 0)
-        this.manualAdjustment = Number(data?.manual_adjustment ?? 0)
 
-        // 🔥 CATEGORY SUMMARY MAPPING
+        // categories
         const categorySummary = data?.category_summary || {}
 
         this.incomeCategories = []
@@ -84,7 +91,7 @@ export const useDashboardStore = defineStore("dashboard", {
             amount: Number(amount),
             percent: totalExpense
               ? Math.round((Number(amount) / totalExpense) * 100)
-              : 0
+              : 0,
           })
         }
 
@@ -98,13 +105,12 @@ export const useDashboardStore = defineStore("dashboard", {
       }
     },
 
-
     reset() {
       this.totals = { income: 0, expense: 0 }
+      this.netCashFlowWithManual = 0
       this.monthlySummary = {}
       this.bankName = "-"
       this.totalTransactions = 0
-      this.manualAdjustment = 0
 
       this.incomeCategories = []
       this.expenseCategories = []

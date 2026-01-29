@@ -4,12 +4,25 @@ import { useDashboardStore } from "../../stores/dashboard.store"
 
 const dashboardStore = useDashboardStore()
 
-// ✅ SAFE COMPUTED VALUES
-const income = computed(() => dashboardStore.totals?.income ?? 0)
-const expense = computed(() => dashboardStore.totals?.expense ?? 0)
-const netCashFlow = computed(
-  () => dashboardStore.netCashFlowWithManual ?? 0
-)
+/**
+ * Totals from backend
+ */
+const income = computed(() => {
+  return Number(dashboardStore.totals?.income ?? 0)
+})
+
+const expense = computed(() => {
+  return Number(dashboardStore.totals?.expense ?? 0)
+})
+
+/**
+ * ✅ FINAL NET CASH FLOW
+ * Comes directly from backend:
+ * net_cash_flow_with_manual
+ */
+const netCashFlow = computed(() => {
+  return Number(dashboardStore.netCashFlowWithManual ?? 0)
+})
 </script>
 
 <template>
@@ -23,7 +36,7 @@ const netCashFlow = computed(
       <div>
         <p class="text-sm text-slate-400">Total Income</p>
         <h2 class="text-3xl font-bold text-white">
-          ₹{{ income.toFixed(2) }}
+          ₹{{ income.toLocaleString(undefined, { minimumFractionDigits: 2 }) }}
         </h2>
         <p class="text-sm text-green-600 mt-2">
           Total credited amount
@@ -47,7 +60,7 @@ const netCashFlow = computed(
       <div>
         <p class="text-sm text-slate-400">Total Expenses</p>
         <h2 class="text-3xl font-bold text-white mt-2">
-          ₹{{ expense.toFixed(2) }}
+          ₹{{ expense.toLocaleString(undefined, { minimumFractionDigits: 2 })}}
         </h2>
         <p class="text-sm text-indigo-600 mt-2">
           Total debited amount
@@ -71,7 +84,7 @@ const netCashFlow = computed(
       <div>
         <p class="text-sm text-slate-400">Net Cash Flow</p>
         <h2 class="text-3xl font-bold text-white mt-2">
-          ₹{{ netCashFlow.toFixed(2) }}
+          ₹{{ Math.abs(netCashFlow).toLocaleString(undefined, { minimumFractionDigits: 2 })}}
         </h2>
         <p class="text-sm text-slate-500 mt-2">
           After manual adjustments
