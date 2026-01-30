@@ -45,11 +45,11 @@ def _persist_statement_and_transactions(
     """
 
     # ❌ Duplicate protection (choice B)
-    if Statement.objects.filter(
-        user=job.user,
-        file_hash=job.file_hash,
-    ).exists():
-        raise ValueError("This statement has already been uploaded.")
+    # if Statement.objects.filter(
+    #     user=job.user,
+    #     file_hash=job.file_hash,
+    # ).exists():
+    #     raise ValueError("This statement has already been uploaded.")
 
     dates = [tx["date"] for tx in structured_transactions]
     start_date = min(dates)
