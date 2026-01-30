@@ -1,14 +1,10 @@
 import jwt
 import requests
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 
 User = get_user_model()
-
-
-CLERK_AUDIENCE = "bank-statement-analyser-api"
 
 
 class ClerkAuthentication(BaseAuthentication):
@@ -31,12 +27,10 @@ class ClerkAuthentication(BaseAuthentication):
             )
 
             issuer = unverified_payload.get("iss")
-            if not issuer:
-                raise AuthenticationFailed("Invalid Clerk token")
+            if not issuer or not issuer.startswith("https://"):
+                raise AuthenticationFailed("Invalid Clerk token issuer")
 
-            if not issuer.startswith("https://"):
-                raise AuthenticationFailed("Invalid issuer")
-
+            # Fetch Clerk JWKS
             jwks_url = f"{issuer}/.well-known/jwks.json"
             jwks = requests.get(jwks_url, timeout=5).json()
 
@@ -44,20 +38,23 @@ class ClerkAuthentication(BaseAuthentication):
             kid = unverified_header.get("kid")
 
             key = None
-            for jwk in jwks["keys"]:
-                if jwk["kid"] == kid:
+            for jwk in jwks.get("keys", []):
+                if jwk.get("kid") == kid:
                     key = jwt.algorithms.RSAAlgorithm.from_jwk(jwk)
                     break
 
             if not key:
                 raise AuthenticationFailed("Invalid token key")
-                
+
+            # ✅ Decode token WITHOUT audience check
             payload = jwt.decode(
                 token,
                 key,
                 algorithms=["RS256"],
-                audience=CLERK_AUDIENCE,
                 issuer=issuer,
+                options={
+                    "verify_aud": False,
+                },
             )
 
         except jwt.ExpiredSignatureError:
@@ -65,9 +62,6 @@ class ClerkAuthentication(BaseAuthentication):
 
         except Exception as e:
             raise AuthenticationFailed(str(e))
-
-        # except Exception:
-        #     raise AuthenticationFailed("Invalid or expired token")
 
         clerk_user_id = payload.get("sub")
         email = payload.get("email")

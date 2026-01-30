@@ -1,21 +1,27 @@
 import axios from "axios"
 
 const api = axios.create({
-  baseURL: "http://127.0.0.1:8000/api",
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   withCredentials: true,
 })
 
-/**
- * 🔐 Attach Clerk JWT automatically
- */
+// 🔐 HARD BLOCK REQUESTS UNTIL CLERK IS READY
 api.interceptors.request.use(async (config) => {
+  // Wait until Clerk is injected
+  while (!window.Clerk) {
+    await new Promise(resolve => setTimeout(resolve, 10))
+  }
+
   const clerk = window.Clerk
 
-  if (clerk && clerk.session) {
-    const token = await clerk.session.getToken({
-      template: "backend",
-    })
+  // Wait until Clerk is fully loaded
+  if (!clerk.loaded) {
+    await clerk.load()
+  }
 
+  // Attach token if session exists
+  if (clerk.session) {
+    const token = await clerk.session.getToken()
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }

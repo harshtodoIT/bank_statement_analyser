@@ -35,7 +35,7 @@
 
 <script>
 export default {
-  name: 'MonthlyTable',
+  name: "MonthlyTable",
   props: {
     transactions: Array
   }

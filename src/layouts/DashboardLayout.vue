@@ -1,31 +1,34 @@
 <script setup>
-  import { ref } from "vue"
-  import { useRoute } from "vue-router"
+import { ref, onMounted } from "vue"
 
-  import DashboardHeader from "../components/dashboard/DashboardHeader.vue"
-  import DashboardSidebar from "../components/dashboard/DashboardSidebar.vue"
+import DashboardSidebar from "../components/dashboard/DashboardSidebar.vue"
+import { usePrivacyStore } from "../stores/privacy.store"
 
-  const route = useRoute()
+const desktopOpen = ref(true)
+const mobileOpen = ref(false)
 
-  const desktopOpen = ref(true)
-  const mobileOpen = ref(false)
+const privacyStore = usePrivacyStore()
 
-  const toggleDesktop = () => {
-    desktopOpen.value = !desktopOpen.value
-  }
+const toggleDesktop = () => {
+  desktopOpen.value = !desktopOpen.value
+}
 
-  const toggleMobile = () => {
-    mobileOpen.value = !mobileOpen.value
-  }
+const toggleMobile = () => {
+  desktopOpen.value = true
+  mobileOpen.value = !mobileOpen.value
+}
 
-  const closeMobile = () => {
-    mobileOpen.value = false
-  }
-  </script>
+const closeMobile = () => {
+  mobileOpen.value = false
+}
 
+onMounted(async () => {
+  await privacyStore.fetchStatus()
+})
+</script>
 
 <template>
-  <div class="flex h-screen bg-gray-50 overflow-hidden">
+  <div class="flex h-screen bg-slate-900 overflow-hidden">
 
     <!-- Sidebar -->
     <div
@@ -36,7 +39,7 @@
       <DashboardSidebar
         :isOpen="desktopOpen"
         @toggle="toggleDesktop"
-        @click="closeMobile"
+        @close-mobile="closeMobile"
       />
     </div>
 
@@ -50,43 +53,26 @@
     <!-- Main -->
     <div class="flex-1 flex flex-col overflow-hidden">
 
-      <!-- MOBILE HEADER (ALL PAGES) -->
-      <header class="lg:hidden bg-white border-b px-4 py-3">
+      <!-- MOBILE HEADER -->
+      <header class="lg:hidden bg-slate-900 border-b border-white/10 px-4 py-3">
         <div class="flex items-start gap-3">
           <button
-            class="p-2 rounded hover:bg-gray-100"
+            class="p-2 rounded text-slate-200 hover:text-white hover:bg-white/10"
             @click="toggleMobile"
           >
             ☰
           </button>
 
           <div>
-            <!-- <h1>Dashboard</h1> -->
-
-            <!-- Dashboard title only on dashboard -->
-            <h1
-              v-if="route.path === '/dashboard'"
-              class="text-xl font-bold text-gray-900"
-            >
-              Dashboard
-            </h1>
-
-            <p class="text-sm text-gray-500">
+            <p class="text-2xl font-bold text-white">
               Bank Statement Analyzer
             </p>
-
           </div>
         </div>
       </header>
 
-      <!-- DESKTOP DASHBOARD HEADER ONLY -->
-      <DashboardHeader
-        class="hidden lg:block"
-        @toggle="toggleDesktop"
-      />
-
       <!-- Page content -->
-      <main class="flex-1 overflow-y-auto p-4 sm:p-5 lg:p-6">
+      <main class="flex-1 overflow-y-auto p-4 sm:p-5 lg:p-6 text-gray-100">
         <router-view />
       </main>
 

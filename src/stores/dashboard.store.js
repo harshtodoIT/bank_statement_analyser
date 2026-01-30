@@ -1,98 +1,137 @@
-import { defineStore } from "pinia";
-import { getDashboardResults } from "../api/dashboard.api";
-import { useProcessingStore } from "./processing.store";
+import { defineStore } from "pinia"
+import { getDashboardResults } from "../api/dashboard.api"
 
 export const useDashboardStore = defineStore("dashboard", {
   state: () => ({
-    loading: false,
-    error: null,
-
     totals: {
       income: 0,
-      expense: 0
+      expense: 0,
     },
-    monthlySummary: {},
-    categorySummary: {},
-    manualAdjustments: [],
-    netCashFlow: 0,
+
+    // authoritative values
     netCashFlowWithManual: 0,
+    manualAdjustments: [],
 
-    // ✅ NEW
-    totalTransactions: 0,
+    monthlySummary: {},
     bankName: "-",
+    totalTransactions: 0,
 
+    // categories
     incomeCategories: [],
     expenseCategories: [],
     uncategorizedAmount: 0,
+
+    loaded: false,
+    loading: false,
+    error: null,
   }),
 
-  actions: {
-    async fetchDashboardData() {
-      const processingStore = useProcessingStore();
-      if (!processingStore.jobId) return;
+  getters: {
+    netCashFlow(state) {
+      return Number(state.totals.income) - Number(state.totals.expense)
+    },
+  },
 
-      this.loading = true;
-      this.error = null;
+  actions: {
+    async fetchDashboardData(jobId) {
+      if (this.loading) return
+
+      this.loading = true
+      this.error = null
 
       try {
-        const res = await getDashboardResults(processingStore.jobId);
+        const response = await getDashboardResults(jobId)
 
-        if (res.status === "FAILED") {
-          this.error = res.error;
-          return;
+        // ✅ NORMALIZE RESPONSE SHAPE SAFELY
+        const payload = response?.data?.data ?? response?.data ?? response
+
+        // totals
+        this.totals.income = Number(payload?.totals?.credit ?? 0)
+        this.totals.expense = Number(payload?.totals?.debit ?? 0)
+
+        // net cash flow (manual-aware if present)
+        this.netCashFlowWithManual = Number(
+          payload?.net_cash_flow_with_manual ??
+          payload?.net_cash_flow ??
+          (this.totals.income - this.totals.expense)
+        )
+
+        this.manualAdjustments = payload?.manual_adjustments ?? []
+
+        // ✅ MONTHLY SUMMARY (derive net correctly)
+        const mappedMonthly = {}
+        for (const [month, values] of Object.entries(payload?.monthly_summary ?? {})) {
+          const income = Number(values.credit ?? 0)
+          const expense = Number(values.debit ?? 0)
+
+          mappedMonthly[month] = {
+            income,
+            expense,
+            net: income - expense, // ✅ FIX
+          }
+        }
+        this.monthlySummary = mappedMonthly
+
+        // ✅ BANK NAME (never overwrite valid value)
+        this.bankName =
+          payload?.bank_name && payload.bank_name.trim()
+            ? payload.bank_name
+            : "-"
+
+        this.totalTransactions = Number(payload?.total_transactions ?? 0)
+
+        // categories
+        const categorySummary = payload?.category_summary ?? {}
+
+        this.incomeCategories = []
+        this.expenseCategories = []
+        this.uncategorizedAmount = 0
+
+        const totalExpense = Object.entries(categorySummary)
+          .filter(([k]) => k !== "Income")
+          .reduce((s, [, v]) => s + Number(v), 0)
+
+        for (const [category, amount] of Object.entries(categorySummary)) {
+          if (category === "Income") continue
+
+          if (category === "Uncategorized") {
+            this.uncategorizedAmount = Number(amount)
+            continue
+          }
+
+          this.expenseCategories.push({
+            name: category,
+            amount: Number(amount),
+            percent: totalExpense
+              ? Math.round((Number(amount) / totalExpense) * 100)
+              : 0,
+          })
         }
 
-        const data = res.data;
-
-        this.totals = {
-          income: data.totals.credit,
-          expense: data.totals.debit
-        };
-
-        const normalizedMonthly = {};
-        Object.entries(data.monthly_summary || {}).forEach(
-          ([month, values]) => {
-            normalizedMonthly[month] = {
-              income: values.credit,
-              expense: values.debit,
-              net: values.net
-            };
-          }
-        );
-
-        this.monthlySummary = normalizedMonthly;
-        this.categorySummary = data.category_summary;
-        this.manualAdjustments = data.manual_adjustments;
-        this.netCashFlow = data.net_cash_flow;
-        this.netCashFlowWithManual = data.net_cash_flow_with_manual;
-
-        // --- CATEGORY BREAKDOWN NORMALIZATION ---
-        this.categorySummary = data.category_summary || {};
-
-        this.incomeCategories = [];
-        this.expenseCategories = [];
-        this.uncategorizedAmount = 0;
-
-        Object.entries(this.categorySummary).forEach(([name, amount]) => {
-          if (name === "Income") {
-            this.incomeCategories.push({ name, amount });
-          } else if (name === "Uncategorized") {
-            this.uncategorizedAmount = amount;
-          } else {
-            this.expenseCategories.push({ name, amount });
-          }
-        });
-
-
-        // ✅ FIXED
-        this.totalTransactions = data.total_transactions;
-        this.bankName = data.bank_name;
-
-      } catch {
-        this.error = "Failed to load dashboard data";
+        this.loaded = true
+      } catch (err) {
+        console.error("Dashboard fetch failed", err)
+        this.error = "Failed to load dashboard data"
+        this.loaded = false
       } finally {
-        this.loading = false;
+        this.loading = false
       }
-    }
-  }
-});
+    },
+
+    reset() {
+      this.totals = { income: 0, expense: 0 }
+      this.netCashFlowWithManual = 0
+      this.monthlySummary = {}
+      this.bankName = "-"
+      this.totalTransactions = 0
+
+      this.incomeCategories = []
+      this.expenseCategories = []
+      this.uncategorizedAmount = 0
+
+      this.loaded = false
+      this.loading = false
+      this.error = null
+    },
+  },
+})

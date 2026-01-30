@@ -34,8 +34,10 @@ def get_summary(request, job_id):
         )
 
     adjustments_qs = ManualAdjustment.objects.filter(
+        result=result,
         user=request.user
     )
+
 
     adjustments = []
     total_manual = 0.0

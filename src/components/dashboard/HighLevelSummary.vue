@@ -1,62 +1,87 @@
 <script setup>
-  import { computed } from "vue";
-  import { useDashboardStore } from "../../stores/dashboard.store";
+import { computed } from "vue"
+import { useDashboardStore } from "../../stores/dashboard.store"
 
-  const dashboardStore = useDashboardStore();
+import {
+  IndianRupee,
+  Calendar,
+  Building2
+} from "lucide-vue-next"
 
-  const transactionCount = computed(() => {
-    return dashboardStore.totalTransactions;
-  });
+const dashboardStore = useDashboardStore()
 
-  const dateRange = computed(() => {
-    const months = Object.keys(dashboardStore.monthlySummary || {});
-    if (!months.length) return "-";
-    return `${months[0]} – ${months[months.length - 1]}`;
-  });
+// ✅ SAFE COMPUTEDS
+const transactionCount = computed(() => {
+  return dashboardStore.totalTransactions ?? 0
+})
 
-  const bankName = computed(() => {
-    return dashboardStore.bankName || "-";
-  });
-  </script>
+const dateRange = computed(() => {
+  const summary = dashboardStore.monthlySummary ?? {}
+  const months = Object.keys(summary)
+  if (!months.length) return "-"
+  return `${months[0]} – ${months[months.length - 1]}`
+})
 
-  <template>
-    <div class="bg-white rounded-2xl p-6 shadow-sm h-full">
-      <h2 class="text-lg font-semibold text-gray-900 mb-6">
-        High-Level Summary
-      </h2>
+const bankName = computed(() => {
+  return dashboardStore.bankName ?? "-"
+})
+</script>
 
-      <div class="space-y-6">
+<template>
+  <div class="bg-slate-800 rounded-2xl p-6 border border-white/5 h-full">
 
-        <div class="flex items-start gap-4">
-          <div class="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">₹</div>
-          <div>
-            <p class="text-sm text-gray-500">Total Transactions Processed</p>
-            <p class="text-lg font-semibold text-gray-900">
-              {{ transactionCount }}
-            </p>
-          </div>
+    <h2 class="text-lg font-semibold text-white mb-6">
+      High-Level Summary
+    </h2>
+
+    <div class="divide-y divide-white/5">
+
+      <!-- Total Transactions -->
+      <div class="flex items-start gap-4 py-4">
+        <div class="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
+          <IndianRupee class="w-5 h-5 text-blue-400" />
         </div>
-
-        <div class="flex items-start gap-4">
-          <div class="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">📅</div>
-          <div>
-            <p class="text-sm text-gray-500">Statement Date Range</p>
-            <p class="text-lg font-semibold text-gray-900">
-              {{ dateRange }}
-            </p>
-          </div>
+        <div>
+          <p class="text-sm text-slate-400">
+            Total Transactions Processed
+          </p>
+          <p class="text-lg font-semibold text-white">
+            {{ transactionCount }}
+          </p>
         </div>
-
-        <div class="flex items-start gap-4">
-          <div class="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">🏦</div>
-          <div>
-            <p class="text-sm text-gray-500">Bank Detected</p>
-            <p class="text-lg font-semibold text-gray-900">
-              {{ bankName }}
-            </p>
-          </div>
-        </div>
-
       </div>
+
+      <!-- Date Range -->
+      <div class="flex items-start gap-4 py-4">
+        <div class="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
+          <Calendar class="w-5 h-5 text-blue-400" />
+        </div>
+        <div>
+          <p class="text-sm text-slate-400">
+            Statement Date Range
+          </p>
+          <p class="text-lg font-semibold text-white">
+            {{ dateRange }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Bank -->
+      <div class="flex items-start gap-4 py-4">
+        <div class="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
+          <Building2 class="w-5 h-5 text-blue-400" />
+        </div>
+        <div>
+          <p class="text-sm text-slate-400">
+            Bank Detected
+          </p>
+          <p class="text-lg font-semibold text-white">
+            {{ bankName }}
+          </p>
+        </div>
+      </div>
+
     </div>
-  </template>
+
+  </div>
+</template>
