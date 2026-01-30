@@ -9,6 +9,7 @@ const viewMode = ref("table") // 'table' | 'cards'
 
 /**
  * Convert monthlySummary object into ordered array
+ * ✅ USE BACKEND-PROVIDED net VALUE
  */
 const data = computed(() => {
   return Object.entries(store.monthlySummary || {})
@@ -22,9 +23,9 @@ const data = computed(() => {
           month: "short",
           year: "numeric"
         }),
-        income: values.income || 0,
-        expenses: values.expense || 0,
-        net: values.net || 0
+        income: Number(values.income ?? 0),
+        expenses: Number(values.expense ?? 0),
+        net: Number(values.net ?? 0), // ✅ FIX
       }
     })
 })

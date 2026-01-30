@@ -8,7 +8,7 @@ export const useDashboardStore = defineStore("dashboard", {
       expense: 0,
     },
 
-    // ✅ single source of truth from backend
+    // authoritative values
     netCashFlowWithManual: 0,
     manualAdjustments: [],
 
@@ -41,34 +41,47 @@ export const useDashboardStore = defineStore("dashboard", {
 
       try {
         const response = await getDashboardResults(jobId)
-        const data = response.data ?? response
+
+        // ✅ NORMALIZE RESPONSE SHAPE SAFELY
+        const payload = response?.data?.data ?? response?.data ?? response
 
         // totals
-        this.totals.income = Number(data?.totals?.credit ?? 0)
-        this.totals.expense = Number(data?.totals?.debit ?? 0)
+        this.totals.income = Number(payload?.totals?.credit ?? 0)
+        this.totals.expense = Number(payload?.totals?.debit ?? 0)
 
-        // ✅ authoritative value
+        // net cash flow (manual-aware if present)
         this.netCashFlowWithManual = Number(
-          data?.net_cash_flow_with_manual ?? data?.net_cash_flow ?? 0
+          payload?.net_cash_flow_with_manual ??
+          payload?.net_cash_flow ??
+          (this.totals.income - this.totals.expense)
         )
 
-        this.manualAdjustments = data?.manual_adjustments ?? []
+        this.manualAdjustments = payload?.manual_adjustments ?? []
 
-        // monthly
+        // ✅ MONTHLY SUMMARY (derive net correctly)
         const mappedMonthly = {}
-        for (const [month, values] of Object.entries(data?.monthly_summary ?? {})) {
+        for (const [month, values] of Object.entries(payload?.monthly_summary ?? {})) {
+          const income = Number(values.credit ?? 0)
+          const expense = Number(values.debit ?? 0)
+
           mappedMonthly[month] = {
-            income: Number(values.credit ?? 0),
-            expense: Number(values.debit ?? 0),
+            income,
+            expense,
+            net: income - expense, // ✅ FIX
           }
         }
         this.monthlySummary = mappedMonthly
 
-        this.bankName = data?.bank_name ?? "-"
-        this.totalTransactions = Number(data?.total_transactions ?? 0)
+        // ✅ BANK NAME (never overwrite valid value)
+        this.bankName =
+          payload?.bank_name && payload.bank_name.trim()
+            ? payload.bank_name
+            : "-"
+
+        this.totalTransactions = Number(payload?.total_transactions ?? 0)
 
         // categories
-        const categorySummary = data?.category_summary || {}
+        const categorySummary = payload?.category_summary ?? {}
 
         this.incomeCategories = []
         this.expenseCategories = []

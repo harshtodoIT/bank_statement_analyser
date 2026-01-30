@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from "vue"
+import { UserButton, useUser } from "@clerk/vue"
 
 import {
   LayoutDashboard,
@@ -46,6 +47,14 @@ const handleNavClick = () => {
 
 const exactActiveClass =
   "bg-indigo-500/20 text-indigo-400 shadow-[inset_3px_0_0_#6366F1]"
+
+// Clerk user
+const { user } = useUser()
+const userButtonAppearance = {
+  elements: {
+    avatarBox: "w-9 h-9"
+  }
+}
 </script>
 
 <template>
@@ -62,7 +71,6 @@ const exactActiveClass =
 
     <!-- HEADER -->
     <div class="h-16 px-4 flex items-center border-b border-white/10">
-
       <div
         class="flex-1 overflow-hidden transition-all duration-300"
         :class="effectiveOpen ? 'opacity-100 max-w-[180px]' : 'opacity-0 max-w-0'"
@@ -90,17 +98,15 @@ const exactActiveClass =
         to="/dashboard"
         :exact-active-class="exactActiveClass"
         @click="handleNavClick"
-        class="group relative flex items-center px-3 py-2 rounded-lg
+        class="group flex items-center px-3 py-2 rounded-lg
                transition-colors duration-200
                hover:bg-indigo-600 hover:text-white"
         :class="effectiveOpen ? 'gap-3 justify-start' : 'justify-center'"
       >
         <LayoutDashboard size="18" />
         <span
-          class="whitespace-nowrap overflow-hidden transition-all duration-300"
-          :class="effectiveOpen
-            ? 'opacity-100 translate-x-0 max-w-[160px]'
-            : 'opacity-0 -translate-x-2 max-w-0'"
+          class="transition-all duration-300 overflow-hidden"
+          :class="effectiveOpen ? 'opacity-100 w-auto' : 'opacity-0 w-0'"
         >
           Dashboard
         </span>
@@ -110,17 +116,15 @@ const exactActiveClass =
         to="/dashboard/category-breakdown"
         :exact-active-class="exactActiveClass"
         @click="handleNavClick"
-        class="group relative flex items-center px-3 py-2 rounded-lg
+        class="group flex items-center px-3 py-2 rounded-lg
                transition-colors duration-200
                hover:bg-indigo-600 hover:text-white"
         :class="effectiveOpen ? 'gap-3 justify-start' : 'justify-center'"
       >
         <PieChart size="18" />
         <span
-          class="whitespace-nowrap transition-all duration-300 overflow-hidden"
-          :class="effectiveOpen
-            ? 'opacity-100 translate-x-0 w-auto'
-            : 'opacity-0 -translate-x-2 w-0'"
+          class="transition-all duration-300 overflow-hidden"
+          :class="effectiveOpen ? 'opacity-100 w-auto' : 'opacity-0 w-0'"
         >
           Category Breakdown
         </span>
@@ -130,17 +134,15 @@ const exactActiveClass =
         to="/dashboard/monthly-summary"
         :exact-active-class="exactActiveClass"
         @click="handleNavClick"
-        class="group relative flex items-center px-3 py-2 rounded-lg
+        class="group flex items-center px-3 py-2 rounded-lg
                transition-colors duration-200
                hover:bg-indigo-600 hover:text-white"
         :class="effectiveOpen ? 'gap-3 justify-start' : 'justify-center'"
       >
         <Calendar size="18" />
         <span
-          class="whitespace-nowrap transition-all duration-300 overflow-hidden"
-          :class="effectiveOpen
-            ? 'opacity-100 translate-x-0 w-auto'
-            : 'opacity-0 -translate-x-2 w-0'"
+          class="transition-all duration-300 overflow-hidden"
+          :class="effectiveOpen ? 'opacity-100 w-auto' : 'opacity-0 w-0'"
         >
           Monthly Summary
         </span>
@@ -150,17 +152,15 @@ const exactActiveClass =
         to="/dashboard/manual-adjustment"
         :exact-active-class="exactActiveClass"
         @click="handleNavClick"
-        class="group relative flex items-center px-3 py-2 rounded-lg
+        class="group flex items-center px-3 py-2 rounded-lg
                transition-colors duration-200
                hover:bg-indigo-600 hover:text-white"
         :class="effectiveOpen ? 'gap-3 justify-start' : 'justify-center'"
       >
         <SlidersHorizontal size="18" />
         <span
-          class="whitespace-nowrap transition-all duration-300 overflow-hidden"
-          :class="effectiveOpen
-            ? 'opacity-100 translate-x-0 w-auto'
-            : 'opacity-0 -translate-x-2 w-0'"
+          class="transition-all duration-300 overflow-hidden"
+          :class="effectiveOpen ? 'opacity-100 w-auto' : 'opacity-0 w-0'"
         >
           Manual Adjustment
         </span>
@@ -170,17 +170,15 @@ const exactActiveClass =
         to="/dashboard/history"
         :exact-active-class="exactActiveClass"
         @click="handleNavClick"
-        class="group relative flex items-center px-3 py-2 rounded-lg
+        class="group flex items-center px-3 py-2 rounded-lg
                transition-colors duration-200
                hover:bg-indigo-600 hover:text-white"
         :class="effectiveOpen ? 'gap-3 justify-start' : 'justify-center'"
       >
         <History size="18" />
         <span
-          class="whitespace-nowrap transition-all duration-300 overflow-hidden"
-          :class="effectiveOpen
-            ? 'opacity-100 translate-x-0 w-auto'
-            : 'opacity-0 -translate-x-2 w-0'"
+          class="transition-all duration-300 overflow-hidden"
+          :class="effectiveOpen ? 'opacity-100 w-auto' : 'opacity-0 w-0'"
         >
           History
         </span>
@@ -188,27 +186,25 @@ const exactActiveClass =
 
     </nav>
 
-    <!-- USER -->
+    <!-- USER (CLERK) -->
     <div class="p-4 border-t border-white/10">
       <div class="flex items-center gap-3">
 
-        <div class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center shrink-0">
-          👤
-        </div>
+        <!-- Avatar / Button -->
+        <UserButton :appearance="userButtonAppearance" />
 
+
+        <!-- User info (only when expanded) -->
         <div
           class="overflow-hidden transition-all duration-300"
           :class="effectiveOpen ? 'opacity-100 max-w-[180px]' : 'opacity-0 max-w-0'"
         >
-          <p class="text-sm font-medium text-white">Guest User</p>
-          <p class="text-xs text-gray-400 mb-1">Temporary session</p>
-
-          <button
-            class="w-full bg-indigo-600 hover:bg-indigo-700
-                   text-white text-xs py-1.5 rounded-md transition"
-          >
-            Login
-          </button>
+          <p class="text-sm font-medium text-white">
+            {{ user?.fullName || "User" }}
+          </p>
+          <p class="text-xs text-gray-400">
+            {{ user?.primaryEmailAddress?.emailAddress }}
+          </p>
         </div>
 
       </div>
