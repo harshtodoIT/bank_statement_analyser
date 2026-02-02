@@ -7,8 +7,8 @@ import { useUploadStore } from "./upload.store"
 
 export const useProcessingStore = defineStore("processing", {
   state: () => ({
-    jobId: localStorage.getItem("job_id"),
-    status: localStorage.getItem("job_status"), // 🔧 restore status
+    jobId: null,
+    status: null,
     error: null
   }),
 
@@ -32,10 +32,7 @@ export const useProcessingStore = defineStore("processing", {
 
       this.jobId = data.job_id
       this.status = data.status
-
-      // ✅ persist both
-      localStorage.setItem("job_id", data.job_id)
-      localStorage.setItem("job_status", data.status)
+      this.error = null
     },
 
     async pollStatus() {
@@ -44,28 +41,31 @@ export const useProcessingStore = defineStore("processing", {
       const data = await getProcessingStatus(this.jobId)
 
       this.status = data.status
-      localStorage.setItem("job_status", data.status)
 
       if (data.status === "FAILED") {
         this.error = data.error
       }
     },
 
+    /**
+     * Called ONLY after successful processing
+     */
     setJob(jobId) {
       this.jobId = jobId
       this.status = "SUCCESS"
-
-      localStorage.setItem("job_id", jobId)
-      localStorage.setItem("job_status", "SUCCESS")
+      this.error = null
     },
 
+    /**
+     * 🔥 MUST be called on:
+     * - login
+     * - logout
+     * - app boot
+     */
     reset() {
       this.jobId = null
       this.status = null
       this.error = null
-
-      localStorage.removeItem("job_id")
-      localStorage.removeItem("job_status")
     }
   }
 })
