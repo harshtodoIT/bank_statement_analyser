@@ -29,34 +29,12 @@ const router = createRouter({
       path: "/dashboard",
       component: DashboardLayout,
       children: [
-        {
-          path: "",
-          component: DashboardView,
-        },
-
-        {
-          path: "category-breakdown",
-          component: CategoryBreakdownView,
-        },
-
-        // ✅ CATEGORY DRILL-DOWN PAGE
-        {
-          path: "category/:category",
-          component: CategoryDetailPage,
-        },
-
-        {
-          path: "monthly-summary",
-          component: MonthlySummaryView,
-        },
-        {
-          path: "manual-adjustment",
-          component: ManualAdjustmentView,
-        },
-        {
-          path: "history",
-          component: HistoryView,
-        },
+        { path: "", component: DashboardView },
+        { path: "category-breakdown", component: CategoryBreakdownView },
+        { path: "category/:category", component: CategoryDetailPage },
+        { path: "monthly-summary", component: MonthlySummaryView },
+        { path: "manual-adjustment", component: ManualAdjustmentView },
+        { path: "history", component: HistoryView },
       ],
     },
 
@@ -65,13 +43,25 @@ const router = createRouter({
   ],
 })
 
+let lastUserId = null
+
 router.beforeEach(async (to) => {
   const clerk = window.Clerk
   if (!clerk) return true
 
   await clerk.load()
-  const isSignedIn = !!clerk.user
   const processingStore = useProcessingStore()
+
+  const currentUserId = clerk.user?.id || null
+
+  // 🔥 CRITICAL FIX
+  // If auth user changed → reset processing state
+  if (lastUserId !== currentUserId) {
+    processingStore.reset()
+    lastUserId = currentUserId
+  }
+
+  const isSignedIn = !!currentUserId
 
   // 🔒 NOT SIGNED IN
   if (!isSignedIn) {
