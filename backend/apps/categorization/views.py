@@ -1,8 +1,8 @@
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from rest_framework import status
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.decorators import api_view, permission_classes  # type: ignore[import]
+from rest_framework.response import Response  # type: ignore[import]
+from rest_framework.permissions import IsAuthenticated  # type: ignore[import]
+from rest_framework import status  # type: ignore[import]
+from rest_framework.exceptions import PermissionDenied  # type: ignore[import]
 
 from apps.processing.models import ProcessingJob
 from apps.results.models import ProcessingResult
