@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory } from "vue-router"
-import { useProcessingStore } from "../stores/processing.store"
 
 import LoginView from "../views/LoginView.vue"
 import UploadView from "../views/UploadView.vue"
 import ProcessingView from "../views/ProcessingView.vue"
+import PrivacyDisclosure from "../views/PrivacyDisclosure.vue"
 
 import DashboardLayout from "../layouts/DashboardLayout.vue"
 import DashboardView from "../views/DashboardView.vue"
@@ -18,10 +18,10 @@ import ErrorView from "../views/ErrorView.vue"
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    { path: "/", redirect: "/upload" },
+    { path: "/", redirect: "/login" },
 
     { path: "/login", component: LoginView },
-
+    { path: "/privacy", component: PrivacyDisclosure },
     { path: "/upload", component: UploadView },
     { path: "/processing", component: ProcessingView },
 
@@ -39,43 +39,55 @@ const router = createRouter({
     },
 
     { path: "/error", component: ErrorView },
-    { path: "/:pathMatch(.*)*", redirect: "/dashboard" },
   ],
 })
-
-let lastUserId = null
 
 router.beforeEach(async (to) => {
   const clerk = window.Clerk
   if (!clerk) return true
 
   await clerk.load()
-  const processingStore = useProcessingStore()
 
-  const currentUserId = clerk.user?.id || null
-
-  // 🔥 CRITICAL FIX
-  // If auth user changed → reset processing state
-  if (lastUserId !== currentUserId) {
-    processingStore.reset()
-    lastUserId = currentUserId
-  }
-
-  const isSignedIn = !!currentUserId
+  const isSignedIn = !!clerk.user?.id
 
   // 🔒 NOT SIGNED IN
   if (!isSignedIn) {
-    return to.path === "/login" ? true : "/login"
+    if (to.path !== "/login") return "/login"
+    return true
   }
 
-  // 🔄 PROCESSING ACTIVE → LOCK EVERYTHING EXCEPT PROCESSING
-  if (processingStore.jobId && processingStore.status === "PROCESSING") {
-    return to.path === "/processing" ? true : "/processing"
-  }
+  // ✅ SIGNED IN — get token properly
+  const token = await clerk.session?.getToken()
+  if (!token) return "/login"
 
-  // 🚫 PROCESSING DONE → BLOCK PROCESSING PAGE
-  if (processingStore.status === "SUCCESS" && to.path === "/processing") {
-    return "/dashboard"
+  try {
+    const response = await fetch("http://127.0.0.1:8000/api/privacy/status/", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
+    if (!response.ok) {
+      console.error("Failed privacy check")
+      return "/login"
+    }
+
+    const data = await response.json()
+    const privacyAccepted = data.has_chosen
+    
+    // 🚨 If NOT accepted → force privacy page
+    if (!privacyAccepted && to.path !== "/privacy") {
+      return "/privacy"
+    }
+
+    // ✅ If accepted and user on login → go dashboard
+    if (privacyAccepted && to.path === "/login") {
+      return "/dashboard"
+    }
+
+  } catch (error) {
+    console.error("Privacy check error:", error)
+    return "/login"
   }
 
   return true

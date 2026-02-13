@@ -44,7 +44,7 @@
               <input
                 type="radio"
                 class="mt-1 accent-blue-500"
-                value="save"
+                value="PERSIST"
                 v-model="storageChoice"
                 aria-label="Allow saving data in memory"
               />
@@ -71,7 +71,7 @@
               <input
                 type="radio"
                 class="mt-1 accent-blue-500"
-                value="nosave"
+                value="TEMPORARY"
                 v-model="storageChoice"
                 aria-label="Do not save data"
               />
@@ -202,25 +202,57 @@
   </div>
 </template>
 <script setup>
+import InfoCard from "../components/InfoCard.vue"
 import { ref, computed } from "vue"
 import { useRouter } from "vue-router"
-
 const router = useRouter()
-const canContinue = computed(() => {
-  return accepted.value === true && storageChoice.value !== null
-})
 
-const handleContinue = () => {
-  localStorage.setItem("privacyAccepted", "true")
-  router.push("/upload")
-}
-
-import InfoCard from "../components/icon/InfoCard.vue"
-const storageChoice = ref("null")
+const storageChoice = ref(null)
 const accepted = ref(false)
-const storageMessage = computed(() => {
-  return storageChoice.value === "save"
-    ? "Your data will be securely stored in memory and available for future sessions."
-    : "Your data will be processed securely and deleted automatically after this session."
+
+const canContinue = computed(() => {
+  return accepted.value && storageChoice.value !== null
 })
+
+const storageMessage = computed(() => {
+  return storageChoice.value === "PERSIST"
+    ? "Your data will be securely stored and available for future sessions."
+    : "Your data will be processed securely and deleted after this session."
+})
+
+const handleContinue = async () => {
+  try {
+    const clerk = window.Clerk
+    const token = await clerk.session.getToken()
+
+    const response = await fetch("http://127.0.0.1:8000/api/privacy/choose/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        privacy_mode: storageChoice.value,
+      }),
+    })
+
+    const data = await response.json()
+
+    // If already set, just continue
+    if (!response.ok) {
+      if (data.error?.includes("already set")) {
+        console.log("Privacy already set. Continuing...")
+      } else {
+        console.error("Backend error:", data)
+        return
+      }
+    }
+
+    localStorage.setItem("privacyAccepted", "true")
+    router.push("/upload")
+
+  } catch (error) {
+    console.error("Privacy selection failed", error)
+  }
+}
 </script>

@@ -4,6 +4,9 @@ import { ref, onMounted } from "vue"
 import DashboardSidebar from "../components/dashboard/DashboardSidebar.vue"
 import { usePrivacyStore } from "../stores/privacy.store"
 
+// ✅ Clerk imports
+import { SignedIn, SignedOut, RedirectToSignIn } from "@clerk/vue"
+
 const desktopOpen = ref(true)
 const mobileOpen = ref(false)
 
@@ -28,54 +31,62 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="flex h-screen bg-slate-900 overflow-hidden">
+  <!-- ✅ If signed in → show dashboard -->
+  <SignedIn>
+    <div class="flex h-screen bg-slate-900 overflow-hidden">
 
-    <!-- Sidebar -->
-    <div
-      class="fixed inset-y-0 left-0 z-40 transform transition-transform duration-300
-             lg:static lg:translate-x-0"
-      :class="mobileOpen ? 'translate-x-0' : '-translate-x-full'"
-    >
-      <DashboardSidebar
-        :isOpen="desktopOpen"
-        @toggle="toggleDesktop"
-        @close-mobile="closeMobile"
+      <!-- Sidebar -->
+      <div
+        class="fixed inset-y-0 left-0 z-40 transform transition-transform duration-300
+               lg:static lg:translate-x-0"
+        :class="mobileOpen ? 'translate-x-0' : '-translate-x-full'"
+      >
+        <DashboardSidebar
+          :isOpen="desktopOpen"
+          @toggle="toggleDesktop"
+          @close-mobile="closeMobile"
+        />
+      </div>
+
+      <!-- Overlay -->
+      <div
+        v-if="mobileOpen"
+        class="fixed inset-0 bg-black/40 z-30 lg:hidden"
+        @click="closeMobile"
       />
-    </div>
 
-    <!-- Overlay -->
-    <div
-      v-if="mobileOpen"
-      class="fixed inset-0 bg-black/40 z-30 lg:hidden"
-      @click="closeMobile"
-    />
+      <!-- Main -->
+      <div class="flex-1 flex flex-col overflow-hidden">
 
-    <!-- Main -->
-    <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- MOBILE HEADER -->
+        <header class="lg:hidden bg-slate-900 border-b border-white/10 px-4 py-3">
+          <div class="flex items-start gap-3">
+            <button
+              class="p-2 rounded text-slate-200 hover:text-white hover:bg-white/10"
+              @click="toggleMobile"
+            >
+              ☰
+            </button>
 
-      <!-- MOBILE HEADER -->
-      <header class="lg:hidden bg-slate-900 border-b border-white/10 px-4 py-3">
-        <div class="flex items-start gap-3">
-          <button
-            class="p-2 rounded text-slate-200 hover:text-white hover:bg-white/10"
-            @click="toggleMobile"
-          >
-            ☰
-          </button>
-
-          <div>
-            <p class="text-2xl font-bold text-white">
-              Bank Statement Analyzer
-            </p>
+            <div>
+              <p class="text-2xl font-bold text-white">
+                Bank Statement Analyzer
+              </p>
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      <!-- Page content -->
-      <main class="flex-1 overflow-y-auto p-4 sm:p-5 lg:p-6 text-gray-100">
-        <router-view />
-      </main>
+        <!-- Page content -->
+        <main class="flex-1 overflow-y-auto p-4 sm:p-5 lg:p-6 text-gray-100">
+          <router-view />
+        </main>
 
+      </div>
     </div>
-  </div>
+  </SignedIn>
+
+  <!-- ❌ If not signed in → redirect to sign-in -->
+  <SignedOut>
+    <RedirectToSignIn />
+  </SignedOut>
 </template>

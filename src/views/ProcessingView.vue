@@ -2,6 +2,8 @@
 import { ref, onMounted, onUnmounted } from "vue"
 import { useRouter } from "vue-router"
 import { useProcessingStore } from "../stores/processing.store"
+import { SignedIn, SignedOut, RedirectToSignIn } from "@clerk/vue"
+
 
 const router = useRouter()
 const processingStore = useProcessingStore()
@@ -71,6 +73,7 @@ onUnmounted(() => {
 </script>
 
 <template>
+  <SignedIn>
   <div
     class="min-h-screen flex items-center justify-center px-4
            bg-gradient-to-br from-[#0b1220] via-[#0e1628] to-[#111827]"
@@ -189,6 +192,10 @@ onUnmounted(() => {
       </p>
     </div>
   </div>
+  </SignedIn>
+  <SignedOut>
+    <RedirectToSignIn />
+  </SignedOut>
 </template>
 
 <style scoped>
