@@ -1,8 +1,9 @@
-import jwt
-import requests
-from django.contrib.auth import get_user_model
-from rest_framework.authentication import BaseAuthentication
-from rest_framework.exceptions import AuthenticationFailed
+import jwt  # type: ignore[import]
+from jwt import algorithms  # type: ignore[import]
+import requests  # type: ignore[import]
+from django.contrib.auth import get_user_model  # type: ignore[import]
+from rest_framework.authentication import BaseAuthentication  # type: ignore[import]
+from rest_framework.exceptions import AuthenticationFailed  # type: ignore[import]
 
 User = get_user_model()
 
@@ -40,7 +41,7 @@ class ClerkAuthentication(BaseAuthentication):
             key = None
             for jwk in jwks.get("keys", []):
                 if jwk.get("kid") == kid:
-                    key = jwt.algorithms.RSAAlgorithm.from_jwk(jwk)
+                    key = algorithms.RSAAlgorithm.from_jwk(jwk)
                     break
 
             if not key:

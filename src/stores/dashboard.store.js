@@ -34,6 +34,12 @@ export const useDashboardStore = defineStore("dashboard", {
 
   actions: {
     async fetchDashboardData(jobId) {
+      // 🛑 HARD GUARD — THIS FIXES EVERYTHING
+      if (!jobId) {
+        this.reset()
+        return
+      }
+
       if (this.loading) return
 
       this.loading = true
@@ -42,14 +48,14 @@ export const useDashboardStore = defineStore("dashboard", {
       try {
         const response = await getDashboardResults(jobId)
 
-        // ✅ NORMALIZE RESPONSE SHAPE SAFELY
+        // normalize backend shape
         const payload = response?.data?.data ?? response?.data ?? response
 
         // totals
         this.totals.income = Number(payload?.totals?.credit ?? 0)
         this.totals.expense = Number(payload?.totals?.debit ?? 0)
 
-        // net cash flow (manual-aware if present)
+        // net cash flow (manual-aware)
         this.netCashFlowWithManual = Number(
           payload?.net_cash_flow_with_manual ??
           payload?.net_cash_flow ??
@@ -58,7 +64,7 @@ export const useDashboardStore = defineStore("dashboard", {
 
         this.manualAdjustments = payload?.manual_adjustments ?? []
 
-        // ✅ MONTHLY SUMMARY (derive net correctly)
+        // monthly summary (derive net safely)
         const mappedMonthly = {}
         for (const [month, values] of Object.entries(payload?.monthly_summary ?? {})) {
           const income = Number(values.credit ?? 0)
@@ -67,12 +73,11 @@ export const useDashboardStore = defineStore("dashboard", {
           mappedMonthly[month] = {
             income,
             expense,
-            net: income - expense, // ✅ FIX
+            net: income - expense,
           }
         }
         this.monthlySummary = mappedMonthly
 
-        // ✅ BANK NAME (never overwrite valid value)
         this.bankName =
           payload?.bank_name && payload.bank_name.trim()
             ? payload.bank_name
@@ -121,6 +126,7 @@ export const useDashboardStore = defineStore("dashboard", {
     reset() {
       this.totals = { income: 0, expense: 0 }
       this.netCashFlowWithManual = 0
+      this.manualAdjustments = []
       this.monthlySummary = {}
       this.bankName = "-"
       this.totalTransactions = 0

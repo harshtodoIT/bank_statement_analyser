@@ -1,13 +1,13 @@
 import threading
 from decimal import Decimal
-from django.conf import settings
-from django.db import transaction
+from django.conf import settings  # type: ignore[import]
+from django.db import transaction  # type: ignore[import]
 
 from apps.parsing.dispatcher import parse_statement
 from apps.structuring.engine import structure_rows
 from apps.validation.engine import validate_transactions
 from apps.computation.services import compute_all
-from apps.categorization.engine import categorize_transactions
+from apps.categorization.ai_engine import categorize_transactions
 
 from .models import ProcessingJob
 from .cleanup import delete_folder
